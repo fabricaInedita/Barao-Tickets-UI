@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+    --color-b-green: #2CB79A;
+    --color-b-blue: #1F99D5;
+    --color-b-dark-blue: #2462AE;
+}
+
+.icon-white {
+    color: white !important;  
+}
+
+.icon-red {
+    color: rgb(255, 107, 107) !important;  
+}

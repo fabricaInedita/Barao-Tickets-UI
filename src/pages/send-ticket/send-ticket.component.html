@@ -1,0 +1,49 @@
+<div class="w-full h-full overflow-auto flex p-8 pt-24 pb-12">
+    <app-card [overflow]="false" [title]="'Enviar ticket'">
+        <form class="flex w-full flex-col gap-3" [formGroup]="formulario" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="fill">
+                <mat-label>Categoria</mat-label>
+                <mat-select formControlName="categoryId">
+                    <mat-option *ngFor="let categoria of categorias" [value]="categoria.categoryId">
+                        {{ categoria.description }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="isFieldInvalid('categoryId')">
+                    {{ getErrorMessage('categoryId') }}
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Unidade</mat-label>
+                <mat-select (selectionChange)="handleGetLocations($event.value)" formControlName="institutionId">
+                    <mat-option *ngFor="let instituicao of instituicoes" [value]="instituicao.id">
+                        {{ instituicao.name }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="isFieldInvalid('institutionId')">
+                    {{ getErrorMessage('institutionId') }}
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Ambiente</mat-label>
+                <mat-select formControlName="locationId">
+                    <mat-option *ngFor="let location of locations" [value]="location.id">
+                        {{ location.name }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="isFieldInvalid('institutionId')">
+                    {{ getErrorMessage('institutionId') }}
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Descrição</mat-label>
+                <textarea rows="6" matInput formControlName="description"></textarea>
+                <mat-error *ngIf="isFieldInvalid('description')">
+                    {{ getErrorMessage('description') }}
+                </mat-error>
+            </mat-form-field>
+            <div>
+                <button mat-raised-button type="submit" [disabled]="formulario.invalid">Enviar</button>
+            </div>
+        </form>
+    </app-card>
+</div>

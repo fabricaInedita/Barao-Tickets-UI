@@ -1,0 +1,49 @@
+<mat-sidenav-container [hasBackdrop]="true">
+  <mat-sidenav fixedInViewport="true" class="h-screen fixed" #drawer>
+    <div class="max-w-[90vw] flex p-6 gap-3 flex-col bg-white text-black min-h-full">
+      <img class="w-64 "
+        src="https://www2.baraodemaua.br/padronizacao/imagens/nova-colorida/logo-barao-colorida-horizontal-nova.png"
+        alt="">
+      <div class="flex flex-col gap-3 px-3">
+        <a *ngFor="let item of items" [routerLink]="item.routerLink" (click)="toggleDrawer()"
+          class="px-3 cursor-pointer p-1.5 gap-3 hover:bg-zinc-200 cursor-poiner bg-opacity-10  hover:bg-opacity-10  rounded flex transition-all ">
+          {{item.sidebarTitle}}
+        </a>
+
+        <div (click)="updatePassword()"
+          class="px-3 cursor-pointer p-1.5 gap-3 hover:bg-zinc-200 cursor-poiner bg-opacity-10  hover:bg-opacity-10  rounded flex transition-all ">
+          Alterar senha
+        </div>
+      </div>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar style="background-color: rgb(36, 98, 174);" class="text-white h-20 fixed top-0 left-0 z-[150]">
+      <div class="flex w-full items-center text-white text-sm">
+        <div class="flex flex-1 justify-start">
+          <button mat-icon-button class="example-icon text-white icon-white" (click)="toggleDrawer()"
+            aria-label="Abrir menu">
+            <mat-icon>menu</mat-icon>
+          </button>
+
+        </div>
+        <div class="flex-1 flex items-center justify-center">
+          <img class="h-12 md:block hidden"
+            src="https://www2.baraodemaua.br/padronizacao/imagens/nova-branca/logo-barao-branco-horizontal-nova.png"
+            alt="">
+        </div>
+        <div class="flex items-center flex-1 justify-end">
+          <p class="h-fit">
+            {{nome}}
+          </p>
+          <button (click)="logout()" mat-icon-button class="example-icon icon-white" aria-label="Desconectar">
+            <mat-icon>power_settings_new</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-toolbar>
+    <div class="w-screen h-screen">
+      <router-outlet />
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

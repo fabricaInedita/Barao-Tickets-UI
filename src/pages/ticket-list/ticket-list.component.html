@@ -1,0 +1,102 @@
+<div class="w-full h-full overflow-auto flex p-8 pt-24 pb-12">
+    <app-card [overflow]="false" [title]="'Lista de feedbacks'">
+        <form (submit)="filtrar()" [formGroup]="form">
+            <div class="flex gap-3 w-full items-end flex-wrap ">
+                <mat-form-field class="max-w-60 w-full" appearance="fill">
+                    <mat-label>Categoria</mat-label>
+                    <mat-select formControlName="categoryId">
+                        <mat-option [value]="null">
+                            Nenhum
+                        </mat-option>
+                        <mat-option *ngFor="let categoria of categorias" [value]="categoria.categoryId">
+                            {{ categoria.description }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="max-w-60 w-full" appearance="fill">
+                    <mat-label>Código de aluno</mat-label>
+                    <input matInput formControlName="studentCode" />
+                </mat-form-field>
+                <mat-form-field class="max-w-60 w-full" appearance="fill">
+                    <mat-label>Código de aluno</mat-label>
+                    <input matInput formControlName="title" />
+                </mat-form-field>
+                <mat-form-field class="max-w-60 w-full" appearance="fill">
+                    <mat-label>Data inicial</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="initialDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="max-w-60 w-full" appearance="fill">
+                    <mat-label>Data final</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="endDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="max-w-60 w-full" appearance="fill">
+                    <mat-label>Instituição</mat-label>
+                    <mat-select (selectionChange)="handleGetLocations($event.value)" formControlName="institutionId">
+                        <mat-option [value]="null">
+                            Nenhum
+                        </mat-option>
+                        <mat-option *ngFor="let item of instituicoes" [value]="item.id">
+                            {{ item.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="max-w-60 w-full" appearance="fill">
+                    <mat-label>Ambiente</mat-label>
+                    <mat-select formControlName="locationId">
+                        <mat-option [value]="null">
+                            Nenhum
+                        </mat-option>
+                        <mat-option *ngFor="let item of locations" [value]="item.id">
+                            {{ item.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button (click)="filtrar()" mat-raised-button color="primary" class="mb-6">
+                    Pesquisar
+                </button>
+            </div>
+        </form>
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+            <ng-container matColumnDef="titulo">
+                <th mat-header-cell *matHeaderCellDef> Titulo </th>
+                <td mat-cell *matCellDef="let element"> {{ element.title }} </td>
+            </ng-container>
+            <ng-container matColumnDef="codigo_aluno">
+                <th mat-header-cell *matHeaderCellDef> Código aluno </th>
+                <td mat-cell *matCellDef="let element"> {{ element.studentCode }} </td>
+            </ng-container>
+            <ng-container matColumnDef="instituicao">
+                <th mat-header-cell *matHeaderCellDef> Instituição </th>
+                <td mat-cell *matCellDef="let element"> {{ element.institutionName }} </td>
+            </ng-container>
+            <ng-container matColumnDef="data">
+                <th mat-header-cell *matHeaderCellDef> Data </th>
+                <td mat-cell *matCellDef="let element"> {{ element.createdAt }} </td>
+            </ng-container>
+            <ng-container matColumnDef="categoria">
+                <th mat-header-cell *matHeaderCellDef> Categoria </th>
+                <td mat-cell *matCellDef="let element"> {{ element.categoryName }} </td>
+            </ng-container>
+            <ng-container matColumnDef="location">
+                <th mat-header-cell *matHeaderCellDef> Ambiente </th>
+                <td mat-cell *matCellDef="let element"> {{ element.locationName }} </td>
+            </ng-container>
+            <ng-container matColumnDef="acao">
+                <th mat-header-cell *matHeaderCellDef> </th>
+                <td mat-cell *matCellDef="let element">
+                    <div class="w-full flex justify-end">
+                        <button mat-raised-button color="primary" (click)="verificar(element.ticketId)">
+                            Visualizar
+                        </button>
+                    </div>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </app-card>
+</div>
