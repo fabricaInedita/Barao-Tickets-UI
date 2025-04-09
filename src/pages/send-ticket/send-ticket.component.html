@@ -2,6 +2,12 @@
     <app-card [overflow]="false" [title]="'Enviar ticket'">
         <form class="flex w-full flex-col gap-3" [formGroup]="formulario" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="fill">
+                <mat-label>Título</mat-label> 
+                <mat-error *ngIf="isFieldInvalid('title')">
+                    {{ getErrorMessage('title') }}
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
                 <mat-label>Categoria</mat-label>
                 <mat-select formControlName="categoryId">
                     <mat-option *ngFor="let categoria of categorias" [value]="categoria.categoryId">
