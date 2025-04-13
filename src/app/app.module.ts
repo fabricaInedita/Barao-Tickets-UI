@@ -40,6 +40,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { UserListComponent } from '../pages/user-list/user-list.component';
 import { TextDialogComponent } from '../dialogs/text-dialog/text-dialog.component';
 import { UpdatePasswordComponent } from '../dialogs/update-password/update-password.component';
+import { LoadingScreenComponent } from '../components/loading-screen/loading-screen.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @NgModule({
     declarations: [
@@ -58,7 +60,8 @@ import { UpdatePasswordComponent } from '../dialogs/update-password/update-passw
         FastSelectSendTicketComponent,
         UserListComponent,
         TextDialogComponent,
-        UpdatePasswordComponent
+        UpdatePasswordComponent,
+        LoadingScreenComponent
     ],
     imports: [
         BrowserModule,
@@ -81,7 +84,8 @@ import { UpdatePasswordComponent } from '../dialogs/update-password/update-passw
         BrowserAnimationsModule,
         MatButtonToggleModule,
         MatDialogModule,
-        FormsModule
+        FormsModule,
+        MatProgressSpinnerModule
     ],
     providers: [
         UserService,

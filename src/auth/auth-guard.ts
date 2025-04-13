@@ -5,6 +5,7 @@ import { cookiesService } from '../services/cookies-service';
 import { AUTH } from '../config/auth-config';
 import { AuthenticationService } from '../services/authentication-service';
 import { UserService } from '../services/user-service';
+import { consumerPollProducersForChange } from '@angular/core/primitives/signals';
 
 @Injectable({
     providedIn: 'root'
@@ -28,10 +29,18 @@ export class AuthGuard implements CanActivate {
         const expirationDate = cookiesService.get("expirationDateTimeAccessToken");
         const userClaims: string[] = route.data['claim'];
 
-        return AuthenticationService.authenticationPipeline(
+        console.log(
             token,
             state.url,
             expirationDate ? new Date(expirationDate) : new Date(),
+            AUTH.DISABLE_AUTH,
+            AUTH.AUTHORIZE_NOT_REQUIRED,
+        )
+
+        return AuthenticationService.validateSession(
+            token,
+            state.url,
+            expirationDate ? new Date(expirationDate) : new Date(), 
             AUTH.DISABLE_AUTH,
             AUTH.AUTHORIZE_NOT_REQUIRED,
             (event): any => {

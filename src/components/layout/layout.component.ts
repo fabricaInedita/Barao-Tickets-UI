@@ -27,7 +27,8 @@ export class LayoutComponent {
   ) {
     this.userType = this.cookieService.get("type")
     this.nome = this.cookieService.get("name") ?? ""
-    this.items = Object.values(ROUTE_CONFIG).filter(e => e.sidebar && (this.userType && e.claim.includes(this.userType) || AUTH.DISABLE_AUTH))
+    //this.items = Object.values(ROUTE_CONFIG).filter(e => e.sidebar && (this.userType && e.claim?.includes(this.userType) || AUTH.DISABLE_AUTH))
+    this.items = Object.values(ROUTE_CONFIG).filter(e => e.sidebar && ( e.claim == null || AUTH.DISABLE_AUTH))
   }
 
   toggleDrawer() {

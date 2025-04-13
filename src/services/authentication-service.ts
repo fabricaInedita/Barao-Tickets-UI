@@ -3,7 +3,7 @@ export type RedirectType = "authenticate" | "not-required" | "logout"
 export class AuthenticationService {
     public static timeoutStarted = false
 
-    public static authenticationPipeline(
+    public static validateSession (
         token: string | undefined,
         currentRoute: string,
         expirationDate: Date,
@@ -11,18 +11,6 @@ export class AuthenticationService {
         unprotectedPaths: string[],
         redirect: (event: RedirectType) => boolean | void | null | undefined
     ) {
-
-        const timeDiference2 = new Date(expirationDate).getTime() - new Date().getTime()
-
-        console.log({
-            token,
-            currentRoute,
-            expirationDate,
-            disableAuth,
-            unprotectedPaths,
-            timeDiference2
-        })
-
         if (disableAuth == true) {
             return redirect("authenticate") ?? true
         }
@@ -31,10 +19,7 @@ export class AuthenticationService {
             return redirect("not-required") ?? true
         }
 
-        else if ((expirationDate == null || expirationDate == undefined) && (token == null || token == undefined)) {
-            if (unprotectedPaths.includes(currentRoute)) {
-                return redirect("not-required") ?? true
-            }
+        else if (expirationDate == null || expirationDate == undefined || token == null || token == undefined) {
 
             return redirect("logout") ?? false
         }

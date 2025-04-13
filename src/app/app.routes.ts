@@ -125,28 +125,28 @@ export const routes: Routes = [
       }
     ]
   },
-  {
-    path: ROUTE_CONFIG.LOGIN.path,
-    component: LoginComponent,
-    title: ROUTE_CONFIG.LOGIN.titlePage,
-    data: {
-      sidebarTitle: ROUTE_CONFIG.LOGIN.sidebarTitle,
-      sidebar: ROUTE_CONFIG.LOGIN.sidebar,
-      claim: ROUTE_CONFIG.LOGIN.claim
-    },
-    canActivate: [AuthGuard]
-  },
-  {
-    path: ROUTE_CONFIG.SIGNUP.path,
-    component: SignupComponent,
-    title: ROUTE_CONFIG.SIGNUP.titlePage,
-    data: {
-      sidebarTitle: ROUTE_CONFIG.SIGNUP.sidebarTitle,
-      sidebar: ROUTE_CONFIG.SIGNUP.sidebar,
-      claim: ROUTE_CONFIG.SIGNUP.claim
-    },
-    canActivate: [AuthGuard]
-  },
+  // {
+  //   path: ROUTE_CONFIG.LOGIN.path,
+  //   component: LoginComponent,
+  //   title: ROUTE_CONFIG.LOGIN.titlePage,
+  //   data: {
+  //     sidebarTitle: ROUTE_CONFIG.LOGIN.sidebarTitle,
+  //     sidebar: ROUTE_CONFIG.LOGIN.sidebar,
+  //     claim: ROUTE_CONFIG.LOGIN.claim
+  //   },
+  //   canActivate: [AuthGuard]
+  // },
+  // {
+  //   path: ROUTE_CONFIG.SIGNUP.path,
+  //   component: SignupComponent,
+  //   title: ROUTE_CONFIG.SIGNUP.titlePage,
+  //   data: {
+  //     sidebarTitle: ROUTE_CONFIG.SIGNUP.sidebarTitle,
+  //     sidebar: ROUTE_CONFIG.SIGNUP.sidebar,
+  //     claim: ROUTE_CONFIG.SIGNUP.claim
+  //   },
+  //   canActivate: [AuthGuard]
+  // },
   {
     path: '**',
     redirectTo: ''

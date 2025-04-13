@@ -4,6 +4,7 @@ const AUTH = {
   AUTHORIZE_NOT_REQUIRED: [
     "/login",
     "/signup",
+    "/"
   ],
   DISABLE_AUTH: false,
   STARTER_LENGTH_HISTORY: window.history.length,

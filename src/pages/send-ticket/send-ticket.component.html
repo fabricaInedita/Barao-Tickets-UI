@@ -1,9 +1,10 @@
 <div class="w-full h-full overflow-auto flex p-8 pt-24 pb-12">
+    <app-loading-screen [isLoading]="isLoading"></app-loading-screen>
     <app-card [overflow]="false" [title]="'Enviar ticket'">
         <form class="flex w-full flex-col gap-3" [formGroup]="formulario" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="fill">
-                <mat-label>Título</mat-label> 
-               <input matInput formControlName="title" />
+                <mat-label>Nome</mat-label>
+                <input matInput formControlName="title" />
                 <mat-error *ngIf="isFieldInvalid('title')">
                     {{ getErrorMessage('title') }}
                 </mat-error>

@@ -3,7 +3,7 @@ export interface IRouteConfig {
     path: string
     titlePage: string
     sidebarTitle: string
-    claim: string[]
+    claim: string[] | null
 }
 export const ROUTE_CONFIG = {
     HOME: {
@@ -36,7 +36,7 @@ export const ROUTE_CONFIG = {
         titlePage: "Enviar ticket",
         sidebarTitle: "Enviar ticket",
         sidebar: true,
-        claim: ["student"]
+        claim: null
     },
     TICKET_VIEW: {
         routerLink: "/ticket-view",

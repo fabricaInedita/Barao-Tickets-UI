@@ -4,8 +4,8 @@ import { ROUTE_CONFIG } from '../../config/route-config';
 import { UserService } from '../../services/user-service';
 
 @Component({
-  selector: 'app-login',  
-  standalone:false,
+  selector: 'app-login',
+  standalone: false,
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
   host: {
@@ -15,6 +15,7 @@ import { UserService } from '../../services/user-service';
 export class LoginComponent {
   public formulario: FormGroup;
   public ROUTE_CONFIG: typeof ROUTE_CONFIG
+  public isLoading: boolean = false
 
   constructor(
     private fb: FormBuilder,
@@ -28,6 +29,15 @@ export class LoginComponent {
   }
 
   public handleLogin() {
-    this.UserService.loginPost(this.formulario.value).subscribe()
+    this.isLoading = true
+    
+    this.UserService.loginPost(this.formulario.value).subscribe(
+      e => {
+        this.isLoading = false
+      },
+      err => {
+        this.isLoading = false
+      }
+    )
   }
 }

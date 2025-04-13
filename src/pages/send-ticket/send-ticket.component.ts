@@ -9,7 +9,8 @@ import { TicketService } from '../../services/ticket-service';
 import { ILocation } from '../../interfaces/entities/location';
 import { LocationService } from '../../services/location-service';
 import { FastSelectSendTicketComponent } from '../../dialogs/fast-select-send-ticket/fast-select-send-ticket.component';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
+import { forkJoin, tap } from 'rxjs';
 
 @Component({
   selector: 'app-send-ticket',
@@ -21,10 +22,12 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
   }
 })
 export class SendTicketComponent {
+  public isLoading = false;
   public formulario: FormGroup;
-  public categorias: ICategory[];
-  public locations: ILocation[];
-  public instituicoes: IInstitution[];
+  public categorias: ICategory[] = [];
+  public locations: ILocation[] = [];
+  public instituicoes: IInstitution[] = [];
+
   private _snackBar = inject(MatSnackBar);
 
   constructor(
@@ -35,11 +38,6 @@ export class SendTicketComponent {
     private ticketService: TicketService,
     private dialog: MatDialog
   ) {
-    this.categorias = []
-    this.instituicoes = []
-    this.instituicoes = []
-    this.locations = []
-
     this.formulario = this.fb.group({
       title: ['', Validators.required],
       categoryId: ['', Validators.required],
@@ -47,73 +45,89 @@ export class SendTicketComponent {
       description: ['', Validators.required],
       locationId: ['', Validators.required],
     });
-    this.categoryService.getCategory().subscribe(e => {
-      this.categorias = e.data
-    })
-    this.institutionService.getInstitution().subscribe(e => {
-      this.instituicoes = e.data
 
-      this.openFastTicketDialog().afterClosed().subscribe((id: number) => {
-        if (id == null) {
-          return;
-        }
+    this.loadInitialData();
+  }
 
-        this.locationService.getLocationById({ locationId: id }).subscribe(e => {
-          this.locationService.getLocation({ intitutionId: e.data.institution.id }).subscribe(items => {
-            this.locations = items.data;
-            this.formulario.reset({
-              ...this.formulario.value,
-              locationId: e.data.id,
-              institutionId: e.data.institution.id
-            })
+  private loadInitialData(): void {
+    this.isLoading = true;
 
-          })
+    forkJoin({
+      getCategory: this.categoryService.getCategory().pipe(tap(res => this.categorias = res.data)),
+      getInstitution: this.institutionService.getInstitution().pipe(
+        tap(res => {
+          this.instituicoes = res.data;
+          this.handleFastTicketDialog();
         })
-      })
-    })
+      )
+    }).subscribe({
+      next: () => this.isLoading = false,
+      error: () => this.isLoading = false
+    });
+  }
 
+  private handleFastTicketDialog(): void {
+    this.openFastTicketDialog().afterClosed().subscribe((id: number | null) => {
+      if (id == null) return;
+
+      this.isLoading = true;
+
+      this.locationService.getLocationById({ locationId: id }).subscribe({
+        next: res => {
+          const institutionId = res.data.institution.id;
+
+          this.locationService.getLocation({ intitutionId: institutionId }).subscribe({
+            next: locationsRes => {
+              this.locations = locationsRes.data;
+              this.formulario.reset({
+                ...this.formulario.value,
+                locationId: res.data.id,
+                institutionId: institutionId
+              });
+              this.isLoading = false;
+            },
+            error: () => this.isLoading = false
+          });
+        },
+        error: () => this.isLoading = false
+      });
+    });
   }
 
   isFieldInvalid(field: string): boolean {
     const control = this.formulario.get(field);
-
-    if (control && control.invalid && control.touched) {
-      return true;
-    }
-
-    return false;
+    return !!(control && control.invalid && control.touched);
   }
 
   getErrorMessage(field: string): string {
     const control = this.formulario.get(field);
-
-    if (control && control.hasError('required')) {
-      return 'Este campo é obrigatório.';
-    }
-    return '';
+    return control?.hasError('required') ? 'Este campo é obrigatório.' : '';
   }
 
-  handleGetLocations(event?: string) {
-    this.locationService.getLocation({ intitutionId: event ?? this.formulario.value.institutionId ?? "" }).subscribe(e => {
-      this.locations = e.data;
+  handleGetLocations(event?: string): void {
+    const institutionId = event ?? this.formulario.value.institutionId ?? '';
+    this.locationService.getLocation({ intitutionId: institutionId }).subscribe(res => {
+      this.locations = res.data;
     });
   }
 
-  onSubmit() {
-    if (this.formulario.valid) {
-      this.ticketService.postTicket(this.formulario.value).subscribe(e => {
-        this._snackBar.open("Enviado com sucesso!", "Ok");
-        this.formulario.reset();
-        this.formulario.markAsPristine();
-        this.formulario.markAsUntouched();
+  onSubmit(): void {
+    if (!this.formulario.valid) return;
 
-      })
-    }
+    this.isLoading = true;
+
+    this.ticketService.postTicket(this.formulario.value).subscribe(() => {
+      this._snackBar.open("Enviado com sucesso!", "Ok");
+      this.formulario.reset();
+      this.formulario.markAsPristine();
+      this.formulario.markAsUntouched();
+      this.isLoading = false;
+    });
   }
 
   openFastTicketDialog() {
     return this.dialog.open(FastSelectSendTicketComponent, {
-      width: '400px',
+      width: '400px'
     });
   }
 }
