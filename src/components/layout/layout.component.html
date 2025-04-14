@@ -1,10 +1,11 @@
 <mat-sidenav-container [hasBackdrop]="true">
   <mat-sidenav fixedInViewport="true" class="h-screen fixed" #drawer>
     <div class="max-w-[90vw] flex p-6 gap-3 flex-col bg-white text-black min-h-full">
-      <img class="w-64 "
-        src="https://www2.baraodemaua.br/padronizacao/imagens/nova-colorida/logo-barao-colorida-horizontal-nova.png"
+      <img class="w-24 "
+        src="img/logo.png"
         alt="">
       <div class="flex flex-col gap-3 px-3">
+        <h1 class="font-bold border-y-2 border-y-zinc-800 py-3 text-zinc-800">Comissão Própria de Avaliação</h1>
         <a *ngFor="let item of items" [routerLink]="item.routerLink" (click)="toggleDrawer()"
           class="px-3 cursor-pointer p-1.5 gap-3 hover:bg-zinc-200 cursor-poiner bg-opacity-10  hover:bg-opacity-10  rounded flex transition-all ">
           {{item.sidebarTitle}}
@@ -29,7 +30,7 @@
         </div>
         <div class="flex-1 flex items-center justify-center">
           <img class="h-12 md:block hidden"
-            src="https://www2.baraodemaua.br/padronizacao/imagens/nova-branca/logo-barao-branco-horizontal-nova.png"
+            src="img/logo-white.png"
             alt="">
         </div>
         <div class="flex items-center flex-1 justify-end">

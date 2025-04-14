@@ -67,6 +67,8 @@ export class SendTicketComponent {
   }
 
   private handleFastTicketDialog(): void {
+    this.dialog.closeAll()
+
     this.openFastTicketDialog().afterClosed().subscribe((id: number | null) => {
       if (id == null) return;
 
