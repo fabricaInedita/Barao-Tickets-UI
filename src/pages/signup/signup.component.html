@@ -4,7 +4,7 @@
         <div class="flex items-center justify-center gap-6 flex-col">
             <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-white">
                 <img class="w-44 mr-2"    
-                src="img/logo.png"
+                src="img/logo-white.png"
                 alt="logo">
             </a>
 
@@ -50,7 +50,7 @@
             <div *ngIf="cadastroFinalizado"
                 class="w-full bg-green-100 rounded-lg shadow md:mt-0 sm:max-w-96  p-6 flex flex-col items-center text-center">
                 <h2 class="text-xl font-bold text-green-700">Cadastro Finalizado!</h2>
-                <p class="text-green-600">Seu cadastro foi concluído com sucesso.</p>
+                <p class="text-green-600">Seu cadastro foi concluído com sucesso. Verifique a o seu e-mail institucional para ativar sua conta.</p>
                 <a [routerLink]="ROUTE_CONFIG.LOGIN.routerLink"
                     class="mt-4 bg-b-blue text-white p-3 rounded font-semibold hover:opacity-90 cursor-pointer">Ir para
                     Login</a>

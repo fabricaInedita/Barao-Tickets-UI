@@ -65,6 +65,8 @@ export class UserService extends BaseService {
     }
 
     public logout(): void {
+        console.log("ok")
+
         const keys = Object.keys(Cookies.get());
 
         keys.forEach(e => {

@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivate {
 
     canActivate(
         route: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot
+        state: RouterStateSnapshot,
     ): boolean | Observable<boolean> | Promise<boolean> {
         const user = cookiesService.get("type");
         const token = cookiesService.get("accessToken");
@@ -45,9 +45,10 @@ export class AuthGuard implements CanActivate {
             AUTH.AUTHORIZE_NOT_REQUIRED,
             (event): any => {
                 console.log(event)
+                
                 if (event === "logout") {
-                    this.userService.logout()
                     this.router.navigate(['/login']);
+                    this.userService.logout()
                 }
 
                 if (event === "authenticate") {
