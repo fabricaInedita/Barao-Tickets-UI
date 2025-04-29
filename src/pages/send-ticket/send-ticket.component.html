@@ -3,7 +3,7 @@
     <app-card [overflow]="false" [title]="'Enviar ticket'">
         <form class="flex w-full flex-col gap-3" [formGroup]="formulario" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="fill">
-                <mat-label>Nome</mat-label>
+                <mat-label>Titulo</mat-label>
                 <input matInput formControlName="title" />
                 <mat-error *ngIf="isFieldInvalid('title')">
                     {{ getErrorMessage('title') }}
