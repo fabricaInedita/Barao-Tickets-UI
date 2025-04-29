@@ -33,8 +33,13 @@ export class UserService extends BaseService {
                     Cookies.set(e, value, { expires: Number(response.expirationTimeAccessToken) });
                 });
 
-                this.router.navigate(['/home']);
-
+                if(response.type == "admin"){
+                    this.router.navigate(['/ticket-list']);
+                }
+                else {
+                    this.router.navigate(['/home']);
+                }
+                
                 return response;
             }),
             catchError(error => {

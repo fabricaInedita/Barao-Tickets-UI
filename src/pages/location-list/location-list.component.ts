@@ -45,7 +45,7 @@ export class LocationListComponent {
     this.formulario = this.fb.group<LocationPostSchema>({
       description: this.fb.control<string | null>('', Validators.required),
       name: this.fb.control<string | null>('', Validators.required),
-      institutionId: this.fb.control<string | null>('', Validators.required),
+      institutionId: this.fb.control<string | null>(null, Validators.required),
     });
 
 
@@ -79,7 +79,11 @@ export class LocationListComponent {
   }
 
   handleGetLocations(event?: string) {
-    this.locationService.getLocation({ intitutionId: event ?? this.formulario.value.institutionId ?? "" }).subscribe(e => {
+    if(event == null && this.formulario.value.institutionId == null){
+      return;
+    }
+
+    this.locationService.getLocation({ intitutionId: event ?? this.formulario.value.institutionId}).subscribe(e => {
       this.locations = e.data;
       this.dataSource.data = this.locations;
     });

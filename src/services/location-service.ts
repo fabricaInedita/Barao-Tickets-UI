@@ -14,12 +14,12 @@ export class LocationService extends BaseService {
         super(http);
     }
 
-    public getLocation(data: { intitutionId: string }): Observable<IBaseResponse<ILocation[]>> {
+    public getLocation(data: { intitutionId: string | null | undefined }): Observable<IBaseResponse<ILocation[]>> {
         return this.get<IBaseResponse<ILocation[]>>({ api: env, href: '/location/get-location' }, data)
             .pipe(
                 map(response => response),
                 catchError(error => {
-                    
+
                     throw error;
                 })
             );
@@ -30,7 +30,7 @@ export class LocationService extends BaseService {
             .pipe(
                 map(response => response),
                 catchError(error => {
-                    
+
                     throw error;
                 })
             );
@@ -41,7 +41,7 @@ export class LocationService extends BaseService {
             .pipe(
                 map(response => response),
                 catchError(error => {
-                    
+
                     throw error;
                 })
             );
@@ -52,7 +52,7 @@ export class LocationService extends BaseService {
             .pipe(
                 map(response => response),
                 catchError(error => {
-                    
+
                     throw error;
                 })
             );
