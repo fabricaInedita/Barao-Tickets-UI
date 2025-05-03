@@ -16,34 +16,17 @@ export class TicketService extends BaseService {
 
     public postTicket(data: any): Observable<any> {
         return this.post<any>({ api: env, href: '/ticket/post-ticket' }, data)
-            .pipe(
-                map(response => response),
-                catchError(error => {
-                    
-                    throw error;
-                })
-            );
+    }
+
+    public proccessTicket(params: { ticketId: string | number | null }, data: { processed: boolean }) {
+        return this.patch<any>({ api: env, href: '/ticket/process-ticket', params: params }, data)
     }
 
     public getTickets(params: any): Observable<IBaseResponse<ITicket[]>> {
         return this.get<any>({ api: env, href: '/ticket/get-ticket' }, params)
-            .pipe(
-                map(response => response),
-                catchError(error => {
-                    
-                    throw error;
-                })
-            );
     }
 
     public getTicketById(params: { ticketId: string }): Observable<IBaseResponse<ITicket>> {
         return this.get<any>({ api: env, href: `/ticket/get-ticket-by-id` }, params)
-            .pipe(
-                map(response => response),
-                catchError(error => {
-                    
-                    throw error;
-                })
-            );
     }
 }

@@ -1,6 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ICategory } from '../../interfaces/entities/category';
 import { CategoryService } from '../../services/category-service';
 import { InstitutionService } from '../../services/institution-service';
@@ -11,12 +10,12 @@ import { LocationService } from '../../services/location-service';
 import { FastSelectSendTicketComponent } from '../../dialogs/fast-select-send-ticket/fast-select-send-ticket.component';
 import { MatDialog } from '@angular/material/dialog';
 import { forkJoin, tap } from 'rxjs';
+import { UtilsService } from '../../services/utils-service';
 
 @Component({
   selector: 'app-send-ticket',
   standalone: false,
   templateUrl: './send-ticket.component.html',
-  styleUrls: ['./send-ticket.component.css'],
   host: {
     'class': 'h-screen w-screen'
   }
@@ -28,15 +27,14 @@ export class SendTicketComponent {
   public locations: ILocation[] = [];
   public instituicoes: IInstitution[] = [];
 
-  private _snackBar = inject(MatSnackBar);
-
   constructor(
     private fb: FormBuilder,
     private categoryService: CategoryService,
     private locationService: LocationService,
     private institutionService: InstitutionService,
     private ticketService: TicketService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private UtilsService: UtilsService
   ) {
     this.formulario = this.fb.group({
       title: ['', Validators.required],
@@ -119,7 +117,8 @@ export class SendTicketComponent {
     this.isLoading = true;
 
     this.ticketService.postTicket(this.formulario.value).subscribe(() => {
-      this._snackBar.open("Enviado com sucesso!", "Ok");
+      this.UtilsService.snack("Enviado com sucesso!", "success");
+      
       this.formulario.reset();
       this.formulario.markAsPristine();
       this.formulario.markAsUntouched();

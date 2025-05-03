@@ -7,7 +7,6 @@ import { UserService } from '../../services/user-service';
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   standalone: false,
-  styleUrl: './signup.component.css',
   host: {
     'class': 'flex flex-col w-full'
   }

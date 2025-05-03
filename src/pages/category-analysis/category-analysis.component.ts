@@ -8,7 +8,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   selector: 'app-category-analysis',
   standalone: false,
   templateUrl: './category-analysis.component.html',
-  styleUrl: './category-analysis.component.css',
   host: {
     'class': 'flex flex-col w-full'
   }
@@ -19,6 +18,7 @@ export class CategoryAnalysisComponent {
   public categorias: ICategory[];
   public ordem: { label: string, value: boolean | null }[];
   public form: FormGroup;
+  public isLoading: boolean = false;
 
   constructor(
     private categoryService: CategoryService,
@@ -34,17 +34,37 @@ export class CategoryAnalysisComponent {
       isDescending: [null]
     });
 
-    this.categoryService.getCategory().subscribe(e => {
-      this.categorias = e.data
-    })
-    this.categoryService.getTicketCategories(this.form.value).subscribe(e => {
-      this.dataSource = e.data
-    })
+    this.loadData();
   }
 
-  public filtrar(){
-    this.categoryService.getTicketCategories(this.form.value).subscribe(e => {
-      this.dataSource = e.data
-    })
+  public loadData() {
+    this.isLoading = true;
+    
+    this.categoryService.getCategory().subscribe({
+      next: (e) => {
+        this.categorias = e.data;
+        this.loadTicketCategories();
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  public loadTicketCategories() {
+    this.categoryService.getTicketCategories(this.form.value).subscribe({
+      next: (e) => {
+        this.dataSource = e.data;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  public filtrar() {
+    this.isLoading = true;
+    this.loadTicketCategories();
   }
 }

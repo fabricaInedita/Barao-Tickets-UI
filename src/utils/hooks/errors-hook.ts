@@ -1,6 +1,7 @@
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { UtilsService } from "../../services/utils-service";
 
-function useErrors(error: any, _snackBar: MatSnackBar) {
+function useErrors(error: any, UtilsService: UtilsService) {
 
     try {
         const errors = error.error.errors
@@ -9,12 +10,12 @@ function useErrors(error: any, _snackBar: MatSnackBar) {
 
         values.flatMap((item: any) => {
             return item.map((error: any) =>
-                _snackBar.open(error, "Fechar")
+                UtilsService.snack(error, "error")
             );
 
         });
     } catch (error) {
-        _snackBar.open("Ocorreu um erro desconhecido.", "Fechar");
+        UtilsService.snack("Ocorreu um erro desconhecido.", "error");
     }
 }
 

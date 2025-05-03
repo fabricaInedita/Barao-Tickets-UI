@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@tailwind utilities;
 
 @theme {
     --color-b-green: #2CB79A;
@@ -12,4 +13,25 @@
 
 .icon-red {
     color: rgb(255, 107, 107) !important;  
+}
+
+.mat-mdc-snack-bar-container {
+  --mat-mdc-snack-bar-button-color: #ffffff;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  
+  .mat-mdc-button {
+      color: #ffffff !important; /* Cor do texto branca */
+      
+      &:hover {
+          background-color: #0000008c !important; /* Background preto no hover */
+      }
+  }
+
+  &.app-notification-error {
+      --mdc-snackbar-container-color: #f23a2f;
+  }
+
+  &.app-notification-success {
+      --mdc-snackbar-container-color: #43a446;
+  }
 }

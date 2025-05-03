@@ -1,5 +1,6 @@
 <div class="w-full h-full overflow-auto flex p-8 pt-24 pb-12">
-    <app-card [overflow]="false" [title]="'Análise de categorias'">
+    <app-loading-screen [isLoading]="isLoading"></app-loading-screen>
+    <app-card [overflow]="false" [title]="'Análise de quantitativa de categorias'">
         <form (submit)="filtrar()" [formGroup]="form" class="flex gap-3 items-end flex-wrap w-full">
             <mat-form-field class="max-w-60 w-full" appearance="fill">
                 <mat-label>Categoria</mat-label>
@@ -20,7 +21,7 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <button mat-raised-button color="primary" class="mb-6">
+            <button mat-flat-button color="primary" class="mb-6">
                 Pesquisar
             </button>
         </form>

@@ -1,15 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ICategory } from '../../interfaces/entities/category';
 import { CategoryService } from '../../services/category-service';
 import { MatTableDataSource } from '@angular/material/table';
+import { UtilsService } from '../../services/utils-service';
 
 @Component({
   selector: 'app-category-list',
   standalone: false,
   templateUrl: './category-list.component.html',
-  styleUrls: ['./category-list.component.css'],
   host: {
     'class': 'h-screen w-screen'
   }
@@ -19,11 +19,14 @@ export class CategoryListComponent {
   public categorias: ICategory[];
   public displayedColumns: string[] = ['description', 'actions'];
   public dataSource = new MatTableDataSource<ICategory>();
-  private _snackBar = inject(MatSnackBar);
+  public isLoading: boolean = false;
+  public isSubmitting: boolean = false;
+  public isDeleting: { [key: number]: boolean } = {};
 
   constructor(
     private fb: FormBuilder,
     private categoryService: CategoryService,
+    private UtilsService: UtilsService
   ) {
     this.categorias = [];
 
@@ -45,29 +48,59 @@ export class CategoryListComponent {
   }
 
   onSubmit() {
-    if (this.formulario.valid) {
+    if (this.formulario.valid && !this.isSubmitting) {
+      this.isSubmitting = true;
       const newCategory = this.formulario.value;
-      this.categoryService.postTicketCategory(newCategory).subscribe(() => {
-        this._snackBar.open("Categoria adicionada com sucesso!", "Ok");
-        this.formulario.reset();
-        this.formulario.markAsPristine();
-        this.formulario.markAsUntouched();
-        this.loadCategories();
+      
+      this.categoryService.postTicketCategory(newCategory).subscribe({
+        next: () => {
+          this.UtilsService.snack("Categoria adicionada com sucesso!", "success");
+          this.formulario.reset();
+          this.formulario.markAsPristine();
+          this.formulario.markAsUntouched();
+          this.loadCategories();
+        },
+        error: () => {
+          this.UtilsService.snack("Erro ao adicionar categoria", "error");
+        },
+        complete: () => {
+          this.isSubmitting = false;
+        }
       });
     }
   }
 
   loadCategories() {
-    this.categoryService.getCategory().subscribe(e => {
-      this.categorias = e.data;
-      this.dataSource.data = this.categorias;
+    this.isLoading = true;
+    this.categoryService.getCategory().subscribe({
+      next: (e) => {
+        this.categorias = e.data;
+        this.dataSource.data = this.categorias;
+      },
+      error: () => {
+        this.UtilsService.snack("Erro ao carregar categorias", "error");
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
     });
   }
 
   deleteCategory(id: number) {
-    this.categoryService.deleteCategory({ categoryId: id }).subscribe(() => {
-      this._snackBar.open("Categoria removida com sucesso!", "Ok");
-      this.loadCategories();
+    if (this.isDeleting[id]) return;
+    
+    this.isDeleting[id] = true;
+    this.categoryService.deleteCategory({ categoryId: id }).subscribe({
+      next: () => {
+        this.UtilsService.snack("Categoria removida com sucesso!", "success");
+        this.loadCategories();
+      },
+      error: () => {
+        this.UtilsService.snack("Erro ao remover categoria", "error");
+      },
+      complete: () => {
+        this.isDeleting[id] = false;
+      }
     });
   }
 }

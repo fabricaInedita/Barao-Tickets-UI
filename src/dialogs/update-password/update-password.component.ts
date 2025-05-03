@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { UserService } from '../../services/user-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UtilsService } from '../../services/utils-service';
 
 @Component({
   selector: 'app-update-password',
@@ -11,26 +12,27 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class UpdatePasswordComponent {
   public form: FormGroup;
-  private _snackBar = inject(MatSnackBar)
-
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
-    private dialogRef: MatDialogRef<UpdatePasswordComponent>
+    private dialogRef: MatDialogRef<UpdatePasswordComponent>,
+    private UtilsService: UtilsService
   ) {
     this.form = this.fb.group({
-      currentPassword: "",
-      password: "",
+      currentPassword: ["", Validators.required],
+      password: ["", Validators.required],
     });
   }
 
   submit(): void {
     if (this.form.valid) {
-
-      this.userService.changePassword(this.form.value).subscribe(e => {
-        this._snackBar.open("Senha alterada com sucesso!", "Ok")
-        this.dialogRef.close(this.form.value);
-      })
+      this.userService.changePassword(this.form.value)
+        .subscribe(
+          e => {
+            this.UtilsService.snack("Senha alterada com sucesso!", "success")
+            this.dialogRef.close(this.form.value);
+          }
+        )
     }
   }
 

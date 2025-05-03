@@ -4,6 +4,7 @@ import { catchError, map, Observable, throwError } from 'rxjs';
 import { AUTH } from '../config/auth-config';
 import { useErrors } from '../utils/hooks/errors-hook';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UtilsService } from './utils-service';
 
 export interface Route {
   api: string
@@ -12,7 +13,7 @@ export interface Route {
 }
 
 export abstract class BaseService {
-  private _snackBar = inject(MatSnackBar);
+  private _snackBar = inject(UtilsService);
 
   constructor(
     protected http: HttpClient
@@ -22,7 +23,7 @@ export abstract class BaseService {
     return this.http.post<T>(this.route(route), body, this.config())
       .pipe(
         catchError(error => {
-          useErrors(error,this._snackBar);
+          useErrors(error, this._snackBar);
           return throwError(() => error);
         })
       );
@@ -31,7 +32,7 @@ export abstract class BaseService {
   protected patch<T>(route: Route, body: any): Observable<T> {
     return this.http.patch<T>(this.route(route), body, this.config()).pipe(
       catchError(error => {
-        useErrors(error,this._snackBar);
+        useErrors(error, this._snackBar);
         return throwError(() => error);
       })
     );
@@ -42,7 +43,7 @@ export abstract class BaseService {
 
     return this.http.get<T>(this.route(route), { ...this.config() }).pipe(
       catchError(error => {
-        useErrors(error,this._snackBar);
+        useErrors(error, this._snackBar);
         return throwError(() => error);
       })
     );
@@ -51,7 +52,7 @@ export abstract class BaseService {
   protected put<T>(route: Route, body: any): Observable<T> {
     return this.http.put<T>(this.route(route), body, this.config()).pipe(
       catchError(error => {
-        useErrors(error,this._snackBar);
+        useErrors(error, this._snackBar);
         return throwError(() => error);
       })
     );
@@ -62,7 +63,7 @@ export abstract class BaseService {
 
     return this.http.delete<T>(this.route(route), { ...this.config() }).pipe(
       catchError(error => {
-        useErrors(error,this._snackBar);
+        useErrors(error, this._snackBar);
         return throwError(() => error);
       })
     );

@@ -33,13 +33,13 @@ export class UserService extends BaseService {
                     Cookies.set(e, value, { expires: Number(response.expirationTimeAccessToken) });
                 });
 
-                if(response.type == "admin"){
+                if (response.type == "admin") {
                     this.router.navigate(['/ticket-list']);
                 }
                 else {
                     this.router.navigate(['/home']);
                 }
-                
+
                 return response;
             }),
             catchError(error => {
@@ -47,6 +47,10 @@ export class UserService extends BaseService {
                 throw error;
             })
         );
+    }
+
+    public forgotPassword(data: { email: string; }): Observable<any> {
+        return this.post<any>({ api: env, href: '/user/forgot-password', params: {} }, data)
     }
 
     public signupAluno(data: { studentCode: string, name: string, password: string, confirmPassword: string }) {

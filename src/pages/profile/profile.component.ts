@@ -1,20 +1,19 @@
 import { Component } from '@angular/core';
 import { TicketService } from '../../services/ticket-service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ITicket } from '../../interfaces/entities/ticket';
 
 @Component({
   selector: 'app-send-ticket',
   standalone: false,
-  templateUrl: './ticket-view.component.html',
+  templateUrl: './profile.component.html',
   host: {
     'class': 'h-screen w-screen'
   }
 })
-export class TicketViewComponent {
+export class ProfileComponent {
   public ticket: ITicket | null = null;
   public isLoading: boolean = true;
-  public errorLoading: boolean = false;
 
   constructor(
     private ticketService: TicketService,
@@ -24,16 +23,15 @@ export class TicketViewComponent {
   }
 
   private loadTicket(): void {
-    const ticketId = this.route.snapshot.paramMap.get('id') ?? '';
+    const ticketId = this.route.snapshot.paramMap.get('id') ?? "";
     this.isLoading = true;
-    this.errorLoading = false;
-
+    
     this.ticketService.getTicketById({ ticketId }).subscribe({
       next: (e) => {
         this.ticket = e.data;
       },
       error: () => {
-        this.errorLoading = true;
+        this.ticket = null;
       },
       complete: () => {
         this.isLoading = false;

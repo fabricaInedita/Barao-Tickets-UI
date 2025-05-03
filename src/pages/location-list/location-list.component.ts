@@ -8,6 +8,7 @@ import { IInstitution } from '../../interfaces/entities/institution';
 import { MatTableDataSource } from '@angular/material/table';
 import { LocationService } from '../../services/location-service';
 import { ILocation } from '../../interfaces/entities/location';
+import { UtilsService } from '../../services/utils-service';
 
 export interface LocationPostSchema {
   name: AbstractControl<string | null>,
@@ -19,7 +20,6 @@ export interface LocationPostSchema {
   selector: 'app-location-list',
   standalone: false,
   templateUrl: './location-list.component.html',
-  styleUrls: ['./location-list.component.css'],
   host: {
     'class': 'h-screen w-screen'
   }
@@ -31,12 +31,15 @@ export class LocationListComponent {
   public locations: ILocation[];
   public displayedColumns: string[] = ['name', 'cep', 'actions'];
   public dataSource = new MatTableDataSource<ILocation>();
-  private _snackBar = inject(MatSnackBar);
+  public isLoading: boolean = false;
+  public isSubmitting: boolean = false;
+  public isDeleting: { [key: string]: boolean } = {};
 
   constructor(
     private fb: FormBuilder,
     private locationService: LocationService,
     private institutionService: InstitutionService,
+    private UtilsService: UtilsService
   ) {
     this.categorias = [];
     this.instituicoes = [];
@@ -47,7 +50,6 @@ export class LocationListComponent {
       name: this.fb.control<string | null>('', Validators.required),
       institutionId: this.fb.control<string | null>(null, Validators.required),
     });
-
 
     this.institutionService.getInstitution().subscribe(e => {
       this.instituicoes = e.data
@@ -68,12 +70,17 @@ export class LocationListComponent {
 
   onSubmit() {
     if (this.formulario.valid) {
-      this.locationService.postLocation(this.formulario.value).subscribe(() => {
-        this._snackBar.open("Instituição adicionada com sucesso!", "Ok");
-        this.formulario.reset({ description: "", name: "", institutionId: this.formulario.value.institutionId });
-        this.formulario.markAsPristine();
-        this.formulario.markAsUntouched();
-        this.handleGetLocations();
+      this.isSubmitting = true;
+      this.locationService.postLocation(this.formulario.value).subscribe({
+        next: () => {
+          this.UtilsService.snack("Ambiente adicionada com sucesso!","success");
+          this.formulario.reset();
+          this.isSubmitting = false;
+          this.handleGetLocations();
+        },
+        error: () => {
+          this.isSubmitting = false;
+        }
       });
     }
   }
@@ -83,16 +90,30 @@ export class LocationListComponent {
       return;
     }
 
-    this.locationService.getLocation({ intitutionId: event ?? this.formulario.value.institutionId}).subscribe(e => {
-      this.locations = e.data;
-      this.dataSource.data = this.locations;
+    this.isLoading = true;
+    this.locationService.getLocation({ intitutionId: event ?? this.formulario.value.institutionId}).subscribe({
+      next: (e) => {
+        this.locations = e.data;
+        this.dataSource.data = this.locations;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
     });
   }
 
   deleteInstitution(id: string) {
-    this.locationService.deleteLocation({ institutionId: id }).subscribe(() => {
-      this._snackBar.open("Instituição removida com sucesso!", "Ok");
-      this.handleGetLocations();
+    this.isDeleting[id] = true;
+    this.locationService.deleteLocation({ institutionId: id }).subscribe({
+      next: () => {
+        this.UtilsService.snack("Ambiente removida com sucesso!","success");
+        this.isDeleting[id] = false;
+        this.handleGetLocations();
+      },
+      error: () => {
+        this.isDeleting[id] = false;
+      }
     });
   }
 }

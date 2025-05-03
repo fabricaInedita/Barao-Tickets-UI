@@ -8,4 +8,5 @@ export interface ITicket {
     institutionName: string;
     categoryName: string;
     createdAt: string;
+    processed: boolean
 }
