@@ -5,8 +5,8 @@
             <mat-form-field appearance="fill">
                 <mat-label>Unidade</mat-label>
                 <mat-select (selectionChange)="handleGetLocations($event.value)" formControlName="institutionId">
-                    <mat-option *ngFor="let instituicao of instituicoes" [value]="instituicao.id">
-                        {{ instituicao.name }}
+                    <mat-option *ngFor="let instituicao of instituicoes" [value]="instituicao.value">
+                        {{ instituicao.description }}
                     </mat-option>
                 </mat-select>
                 <mat-error *ngIf="isFieldInvalid('institutionId')">

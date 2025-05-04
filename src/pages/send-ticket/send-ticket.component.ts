@@ -1,16 +1,14 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ICategory } from '../../interfaces/entities/category';
 import { CategoryService } from '../../services/category-service';
 import { InstitutionService } from '../../services/institution-service';
-import { IInstitution } from '../../interfaces/entities/institution';
 import { TicketService } from '../../services/ticket-service';
-import { ILocation } from '../../interfaces/entities/location';
 import { LocationService } from '../../services/location-service';
 import { FastSelectSendTicketComponent } from '../../dialogs/fast-select-send-ticket/fast-select-send-ticket.component';
 import { MatDialog } from '@angular/material/dialog';
 import { forkJoin, tap } from 'rxjs';
 import { UtilsService } from '../../services/utils-service';
+import { IOptionsResponse } from '../../interfaces/shared/options-response';
 
 @Component({
   selector: 'app-send-ticket',
@@ -23,9 +21,9 @@ import { UtilsService } from '../../services/utils-service';
 export class SendTicketComponent {
   public isLoading = false;
   public formulario: FormGroup;
-  public categorias: ICategory[] = [];
-  public locations: ILocation[] = [];
-  public instituicoes: IInstitution[] = [];
+  public categorias: IOptionsResponse[] = [];
+  public locations: IOptionsResponse[] = [];
+  public instituicoes: IOptionsResponse[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -51,8 +49,8 @@ export class SendTicketComponent {
     this.isLoading = true;
 
     forkJoin({
-      getCategory: this.categoryService.getCategory().pipe(tap(res => this.categorias = res.data)),
-      getInstitution: this.institutionService.getInstitution().pipe(
+      getCategory: this.categoryService.getCategoryOptions().pipe(tap(res => this.categorias = res.data)),
+      getInstitution: this.institutionService.getInstitutionOptions().pipe(
         tap(res => {
           this.instituicoes = res.data;
           this.handleFastTicketDialog();
@@ -76,7 +74,7 @@ export class SendTicketComponent {
         next: res => {
           const institutionId = res.data.institution.id;
 
-          this.locationService.getLocation({ intitutionId: institutionId }).subscribe({
+          this.locationService.getLocationOptions({ intitutionId: institutionId }).subscribe({
             next: locationsRes => {
               this.locations = locationsRes.data;
               this.formulario.reset({
@@ -106,7 +104,7 @@ export class SendTicketComponent {
 
   handleGetLocations(event?: string): void {
     const institutionId = event ?? this.formulario.value.institutionId ?? '';
-    this.locationService.getLocation({ intitutionId: institutionId }).subscribe(res => {
+    this.locationService.getLocationOptions({ intitutionId: institutionId }).subscribe(res => {
       this.locations = res.data;
     });
   }

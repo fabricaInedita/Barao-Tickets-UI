@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TextDialogComponent } from '../../dialogs/text-dialog/text-dialog.component';
 import { UtilsService } from '../../services/utils-service';
 import { MatTableDataSource } from '@angular/material/table';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-category-list',
@@ -53,7 +54,10 @@ export class UserListComponent {
 
   getUsersAdmin() {
     this.isLoading = true;
-    this.userService.getColaborator().subscribe({
+    this.userService.getColaborator({
+      page: this.pagination.page + 1,
+      pageSize: this.pagination.pageSize
+    }).subscribe({
       next: (e) => {
         this.dataSource.data = e.data;
       },
@@ -70,10 +74,10 @@ export class UserListComponent {
     this.dialog.open(TextDialogComponent, {
       width: '400px',
       data: {
-        title: "Senha temporária", 
+        title: "Senha temporária",
         message: `A senha temporária do usuário é: ${senha}`,
         messageButton: "Ok"
-      } 
+      }
     });
   }
 
@@ -81,7 +85,7 @@ export class UserListComponent {
     if (this.formulario.valid && !this.isLoading) {
       this.isLoading = true;
       const newUser = this.formulario.value;
-      
+
       this.userService.signupColaborador(newUser).subscribe({
         next: (e) => {
           this.formulario.reset();
@@ -102,7 +106,7 @@ export class UserListComponent {
 
   deleteUser(id: string) {
     if (this.isLoading) return;
-    
+
     this.isLoading = true;
     this.userService.deleteColaborator({ userId: id }).subscribe({
       next: () => {
@@ -116,5 +120,11 @@ export class UserListComponent {
         this.isLoading = false;
       }
     });
+  }
+
+  onPageChange(event: PageEvent) {
+    this.pagination.pageSize = event.pageSize;
+    this.pagination.page = event.pageIndex;
+    this.getUsersAdmin();
   }
 }

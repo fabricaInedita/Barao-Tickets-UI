@@ -5,6 +5,8 @@ import { ICategory } from '../../interfaces/entities/category';
 import { CategoryService } from '../../services/category-service';
 import { MatTableDataSource } from '@angular/material/table';
 import { UtilsService } from '../../services/utils-service';
+import { IOptionsResponse } from '../../interfaces/shared/options-response';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-category-list',
@@ -50,7 +52,7 @@ export class CategoryListComponent {
     if (this.formulario.valid && !this.isLoading) {
       this.isLoading = true;
       const newCategory = this.formulario.value;
-      
+
       this.categoryService.postTicketCategory(newCategory).subscribe({
         next: () => {
           this.UtilsService.snack("Categoria adicionada com sucesso!", "success");
@@ -71,10 +73,12 @@ export class CategoryListComponent {
 
   loadCategories() {
     this.isLoading = true;
-    this.categoryService.getCategory().subscribe({
+    this.categoryService.getCategory({
+      page: this.pagination.page + 1,
+      pageSize: this.pagination.pageSize
+    }).subscribe({
       next: (e) => {
-        this.categorias = e.data;
-        this.dataSource.data = this.categorias;
+        this.dataSource.data = e.data;
       },
       error: () => {
         this.UtilsService.snack("Erro ao carregar categorias", "error");
@@ -87,7 +91,7 @@ export class CategoryListComponent {
 
   deleteCategory(id: number) {
     if (this.isLoading) return;
-    
+
     this.isLoading = true;
     this.categoryService.deleteCategory({ categoryId: id }).subscribe({
       next: () => {
@@ -101,5 +105,11 @@ export class CategoryListComponent {
         this.isLoading = false;
       }
     });
+  }
+
+  onPageChange(event: PageEvent) {
+    this.pagination.pageSize = event.pageSize;
+    this.pagination.page = event.pageIndex;
+    this.loadCategories();
   }
 }

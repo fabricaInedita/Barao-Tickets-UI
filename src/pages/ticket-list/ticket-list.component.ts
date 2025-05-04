@@ -12,6 +12,8 @@ import { LocationService } from '../../services/location-service';
 import { ILocation } from '../../interfaces/entities/location';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { UtilsService } from '../../services/utils-service';
+import { IOptionsResponse } from '../../interfaces/shared/options-response';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-ticket-list',
@@ -23,9 +25,9 @@ import { UtilsService } from '../../services/utils-service';
 export class TicketListComponent {
   public displayedColumns: string[];
   public dataSource: ITicket[];
-  public categorias: ICategory[];
-  public locations: ILocation[];
-  public instituicoes: IInstitution[];
+  public categorias: IOptionsResponse[];
+  public locations: IOptionsResponse[];
+  public instituicoes: IOptionsResponse[];
   public form: FormGroup;
   public isLoading: boolean = false;
   public pagination = { pageSize: 10, totalRecords: 0, page: 0 };
@@ -61,13 +63,13 @@ export class TicketListComponent {
 
   private loadInitialData(): void {
     this.isLoading = true;
-    
-    this.categoryService.getCategory(this.form.value).subscribe({
+
+    this.categoryService.getCategoryOptions(this.form.value).subscribe({
       next: (e) => this.categorias = e.data,
       complete: () => this.isLoading = false
     });
 
-    this.institutionService.getInstitution().subscribe({
+    this.institutionService.getInstitutionOptions().subscribe({
       next: (e) => this.instituicoes = e.data,
       complete: () => this.isLoading = false
     });
@@ -85,7 +87,11 @@ export class TicketListComponent {
 
   private loadTickets(): void {
     this.isLoading = true;
-    this.ticketService.getTickets(this.form.value).subscribe({
+    this.ticketService.getTickets({
+      ...this.form.value,
+      page: this.pagination.page + 1,
+      pageSize: this.pagination.pageSize
+    }).subscribe({
       next: (e) => this.dataSource = e.data,
       complete: () => this.isLoading = false
     });
@@ -93,7 +99,7 @@ export class TicketListComponent {
 
   public handleGetLocations(intitutionId: string): void {
     this.isLoading = true;
-    this.locationService.getLocation({ intitutionId }).subscribe({
+    this.locationService.getLocationOptions({ intitutionId }).subscribe({
       next: (e) => this.locations = e.data,
       complete: () => this.isLoading = false
     });
@@ -124,5 +130,11 @@ export class TicketListComponent {
           this.isLoading = false;
         }
       });
+  }
+
+  onPageChange(event: PageEvent) {
+    this.pagination.pageSize = event.pageSize;
+    this.pagination.page = event.pageIndex;
+    this.loadTickets();
   }
 }

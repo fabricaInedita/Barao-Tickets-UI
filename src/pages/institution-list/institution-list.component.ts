@@ -5,6 +5,8 @@ import { IInstitution } from '../../interfaces/entities/institution';
 import { InstitutionService } from '../../services/institution-service';
 import { UtilsService } from '../../services/utils-service';
 import { MatTableDataSource } from '@angular/material/table';
+import { IOptionsResponse } from '../../interfaces/shared/options-response';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-send-Ticket',
@@ -16,7 +18,7 @@ import { MatTableDataSource } from '@angular/material/table';
 })
 export class InstitutionListComponent {
   public formulario: FormGroup;
-  public categorias: ICategory[] = [];
+  public categorias: IOptionsResponse[] = [];
   public instituicoes: IInstitution[] = [];
   public displayedColumns: string[] = ['name', 'cep', 'actions'];
   public dataSource = new MatTableDataSource<IInstitution>();
@@ -77,7 +79,10 @@ export class InstitutionListComponent {
 
   loadInstitutions() {
     this.isLoading = true;
-    this.institutionService.getInstitution().subscribe({
+    this.institutionService.getInstitution({
+      page: this.pagination.page + 1,
+      pageSize: this.pagination.pageSize
+    }).subscribe({
       next: (e) => {
         this.instituicoes = e.data;
         this.dataSource.data = this.instituicoes;
@@ -108,5 +113,12 @@ export class InstitutionListComponent {
         this.isLoading = false;
       }
     });
+  }
+
+
+  onPageChange(event: PageEvent) {
+    this.pagination.pageSize = event.pageSize;
+    this.pagination.page = event.pageIndex;
+    this.loadInstitutions();
   }
 }

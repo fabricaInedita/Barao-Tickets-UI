@@ -7,7 +7,7 @@
                     <mat-label>Categoria</mat-label>
                     <mat-select formControlName="categoryId">
                         <mat-option [value]="null">Nenhum</mat-option>
-                        <mat-option *ngFor="let categoria of categorias" [value]="categoria.categoryId">
+                        <mat-option *ngFor="let categoria of categorias" [value]="categoria.value">
                             {{ categoria.description }}
                         </mat-option>
                     </mat-select>
@@ -41,8 +41,8 @@
                     <mat-label>Instituição</mat-label>
                     <mat-select (selectionChange)="handleGetLocations($event.value)" formControlName="institutionId">
                         <mat-option [value]="null">Nenhum</mat-option>
-                        <mat-option *ngFor="let item of instituicoes" [value]="item.id">
-                            {{ item.name }}
+                        <mat-option *ngFor="let item of instituicoes" [value]="item.value">
+                            {{ item.description }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -51,8 +51,8 @@
                     <mat-label>Ambiente</mat-label>
                     <mat-select formControlName="locationId">
                         <mat-option [value]="null">Nenhum</mat-option>
-                        <mat-option *ngFor="let item of locations" [value]="item.id">
-                            {{ item.name }}
+                        <mat-option *ngFor="let item of locations" [value]="item.value">
+                            {{ item.description }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>

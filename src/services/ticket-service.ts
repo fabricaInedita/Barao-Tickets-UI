@@ -7,6 +7,12 @@ import { BaseService } from './base-service';
 import { useErrors } from '../utils/hooks/errors-hook';
 import { ITicket } from '../interfaces/entities/ticket';
 import { IBaseResponse } from '../interfaces/shared/base-response';
+import { IOptionsResponse } from '../interfaces/shared/options-response';
+import { IBaseRequest } from '../interfaces/shared/base-request';
+
+interface IGetTicketsParams extends IBaseRequest {
+
+}
 
 @Injectable({ providedIn: 'root' })
 export class TicketService extends BaseService {
@@ -22,8 +28,12 @@ export class TicketService extends BaseService {
         return this.patch<any>({ api: env, href: '/ticket/process-ticket', params: params }, data)
     }
 
-    public getTickets(params: any): Observable<IBaseResponse<ITicket[]>> {
+    public getTickets(params: IGetTicketsParams): Observable<IBaseResponse<ITicket[]>> {
         return this.get<any>({ api: env, href: '/ticket/get-ticket' }, params)
+    }
+
+    public getTicketsOptions(params: Omit<IGetTicketsParams, keyof IGetTicketsParams>): Observable<IBaseResponse<IOptionsResponse[]>> {
+        return this.get<any>({ api: env, href: '/ticket/get-ticket-options' }, params)
     }
 
     public getTicketById(params: { ticketId: string }): Observable<IBaseResponse<ITicket>> {

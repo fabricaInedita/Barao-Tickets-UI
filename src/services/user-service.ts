@@ -8,6 +8,11 @@ import { BaseService } from './base-service';
 import { useErrors } from '../utils/hooks/errors-hook';
 import { Router } from '@angular/router';
 import { IBaseResponse } from '../interfaces/shared/base-response';
+import { IBaseRequest } from '../interfaces/shared/base-request';
+
+interface IGetUsersParams extends IBaseRequest {
+
+}
 
 @Injectable({ providedIn: 'root' })
 export class UserService extends BaseService {
@@ -61,8 +66,8 @@ export class UserService extends BaseService {
         return this.post<IBaseResponse<string>>({ api: env, href: '/user/post-admin-user', params: {} }, data)
     }
 
-    public getColaborator() {
-        return this.get<any>({ api: env, href: '/user/get-admin-list' },)
+    public getColaborator(params: IGetUsersParams) {
+        return this.get<any>({ api: env, href: '/user/get-admin-list', params },)
     }
 
     public deleteColaborator(params: { userId: string }) {

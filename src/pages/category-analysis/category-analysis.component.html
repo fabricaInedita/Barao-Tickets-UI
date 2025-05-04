@@ -8,7 +8,7 @@
                     <mat-option [value]="null">
                         Todas
                     </mat-option>
-                    <mat-option *ngFor="let categoria of categorias" [value]="categoria.categoryId">
+                    <mat-option *ngFor="let categoria of categorias" [value]="categoria.value">
                         {{ categoria.description }}
                     </mat-option>
                 </mat-select>

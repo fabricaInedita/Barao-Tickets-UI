@@ -3,6 +3,7 @@ import { CategoryService } from '../../services/category-service';
 import { ICategory } from '../../interfaces/entities/category';
 import { ICategoryTicket } from '../../interfaces/entities/category-ticket';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { IOptionsResponse } from '../../interfaces/shared/options-response';
 
 @Component({
   selector: 'app-category-analysis',
@@ -15,7 +16,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class CategoryAnalysisComponent {
   public displayedColumns: string[]
   public dataSource: ICategoryTicket[]
-  public categorias: ICategory[];
+  public categorias: IOptionsResponse[];
   public ordem: { label: string, value: boolean | null }[];
   public form: FormGroup;
   public isLoading: boolean = false;
@@ -40,7 +41,7 @@ export class CategoryAnalysisComponent {
   public loadData() {
     this.isLoading = true;
     
-    this.categoryService.getCategory().subscribe({
+    this.categoryService.getCategoryOptions().subscribe({
       next: (e) => {
         this.categorias = e.data;
         this.loadTicketCategories();

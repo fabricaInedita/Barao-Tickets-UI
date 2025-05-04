@@ -9,6 +9,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { LocationService } from '../../services/location-service';
 import { ILocation } from '../../interfaces/entities/location';
 import { UtilsService } from '../../services/utils-service';
+import { IOptionsResponse } from '../../interfaces/shared/options-response';
+import { PageEvent } from '@angular/material/paginator';
 
 export interface LocationPostSchema {
   name: AbstractControl<string | null>,
@@ -26,8 +28,8 @@ export interface LocationPostSchema {
 })
 export class LocationListComponent {
   public formulario: FormGroup<LocationPostSchema>;
-  public categorias: ICategory[];
-  public instituicoes: IInstitution[];
+  public categorias: IOptionsResponse[];
+  public instituicoes: IOptionsResponse[];
   public locations: ILocation[];
   public displayedColumns: string[] = ['name', 'cep', 'actions'];
   public dataSource = new MatTableDataSource<ILocation>();
@@ -50,7 +52,7 @@ export class LocationListComponent {
       institutionId: this.fb.control<string | null>(null, Validators.required),
     });
 
-    this.institutionService.getInstitution().subscribe(e => {
+    this.institutionService.getInstitutionOptions().subscribe(e => {
       this.instituicoes = e.data
     })
 
@@ -90,7 +92,11 @@ export class LocationListComponent {
     }
 
     this.isLoading = true;
-    this.locationService.getLocation({ intitutionId: event ?? this.formulario.value.institutionId}).subscribe({
+    this.locationService.getLocation({
+      page: this.pagination.page + 1,
+      pageSize: this.pagination.pageSize,
+      intitutionId: event ?? this.formulario.value.institutionId
+    }).subscribe({
       next: (e) => {
         this.locations = e.data;
         this.dataSource.data = this.locations;
@@ -114,5 +120,11 @@ export class LocationListComponent {
         this.isLoading = false;
       }
     });
+  }
+
+  onPageChange(event: PageEvent) {
+    this.pagination.pageSize = event.pageSize;
+    this.pagination.page = event.pageIndex;
+    this.handleGetLocations();
   }
 }
