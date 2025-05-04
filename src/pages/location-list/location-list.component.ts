@@ -32,8 +32,7 @@ export class LocationListComponent {
   public displayedColumns: string[] = ['name', 'cep', 'actions'];
   public dataSource = new MatTableDataSource<ILocation>();
   public isLoading: boolean = false;
-  public isSubmitting: boolean = false;
-  public isDeleting: { [key: string]: boolean } = {};
+  public pagination = { pageSize: 10, totalRecords: 0, page: 0 };
 
   constructor(
     private fb: FormBuilder,
@@ -70,16 +69,16 @@ export class LocationListComponent {
 
   onSubmit() {
     if (this.formulario.valid) {
-      this.isSubmitting = true;
+      this.isLoading = true;
       this.locationService.postLocation(this.formulario.value).subscribe({
         next: () => {
           this.UtilsService.snack("Ambiente adicionada com sucesso!","success");
           this.formulario.reset();
-          this.isSubmitting = false;
+          this.isLoading = false;
           this.handleGetLocations();
         },
         error: () => {
-          this.isSubmitting = false;
+          this.isLoading = false;
         }
       });
     }
@@ -104,15 +103,15 @@ export class LocationListComponent {
   }
 
   deleteInstitution(id: string) {
-    this.isDeleting[id] = true;
+    this.isLoading = true;
     this.locationService.deleteLocation({ institutionId: id }).subscribe({
       next: () => {
         this.UtilsService.snack("Ambiente removida com sucesso!","success");
-        this.isDeleting[id] = false;
+        this.isLoading = false;
         this.handleGetLocations();
       },
       error: () => {
-        this.isDeleting[id] = false;
+        this.isLoading = false;
       }
     });
   }

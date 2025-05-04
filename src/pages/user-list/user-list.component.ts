@@ -20,8 +20,7 @@ export class UserListComponent {
   public displayedColumns: string[] = ['name', 'email', 'actions'];
   public dataSource = new MatTableDataSource<IUser>();
   public isLoading: boolean = false;
-  public isSubmitting: boolean = false;
-  public isDeleting: { [key: string]: boolean } = {};
+  public pagination = { pageSize: 10, totalRecords: 0, page: 0 };
 
   constructor(
     private fb: FormBuilder,
@@ -79,8 +78,8 @@ export class UserListComponent {
   }
 
   onSubmit() {
-    if (this.formulario.valid && !this.isSubmitting) {
-      this.isSubmitting = true;
+    if (this.formulario.valid && !this.isLoading) {
+      this.isLoading = true;
       const newUser = this.formulario.value;
       
       this.userService.signupColaborador(newUser).subscribe({
@@ -95,16 +94,16 @@ export class UserListComponent {
           this.UtilsService.snack("Erro ao criar usuário", "error");
         },
         complete: () => {
-          this.isSubmitting = false;
+          this.isLoading = false;
         }
       });
     }
   }
 
   deleteUser(id: string) {
-    if (this.isDeleting[id]) return;
+    if (this.isLoading) return;
     
-    this.isDeleting[id] = true;
+    this.isLoading = true;
     this.userService.deleteColaborator({ userId: id }).subscribe({
       next: () => {
         this.UtilsService.snack("Usuário removido com sucesso!", "success");
@@ -114,7 +113,7 @@ export class UserListComponent {
         this.UtilsService.snack("Erro ao remover usuário", "error");
       },
       complete: () => {
-        this.isDeleting[id] = false;
+        this.isLoading = false;
       }
     });
   }

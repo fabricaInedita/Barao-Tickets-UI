@@ -42,6 +42,7 @@ import { TextDialogComponent } from '../dialogs/text-dialog/text-dialog.componen
 import { UpdatePasswordComponent } from '../dialogs/update-password/update-password.component';
 import { LoadingScreenComponent } from '../components/loading-screen/loading-screen.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { ProfileComponent } from '../pages/profile/profile.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 
@@ -91,6 +92,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
         FormsModule,
         MatProgressSpinnerModule,
         MatCheckboxModule,
+        MatPaginatorModule
     ],
     providers: [
         UserService,

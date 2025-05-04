@@ -20,8 +20,7 @@ export class CategoryListComponent {
   public displayedColumns: string[] = ['description', 'actions'];
   public dataSource = new MatTableDataSource<ICategory>();
   public isLoading: boolean = false;
-  public isSubmitting: boolean = false;
-  public isDeleting: { [key: number]: boolean } = {};
+  public pagination = { pageSize: 10, totalRecords: 0, page: 0 };
 
   constructor(
     private fb: FormBuilder,
@@ -48,8 +47,8 @@ export class CategoryListComponent {
   }
 
   onSubmit() {
-    if (this.formulario.valid && !this.isSubmitting) {
-      this.isSubmitting = true;
+    if (this.formulario.valid && !this.isLoading) {
+      this.isLoading = true;
       const newCategory = this.formulario.value;
       
       this.categoryService.postTicketCategory(newCategory).subscribe({
@@ -64,7 +63,7 @@ export class CategoryListComponent {
           this.UtilsService.snack("Erro ao adicionar categoria", "error");
         },
         complete: () => {
-          this.isSubmitting = false;
+          this.isLoading = false;
         }
       });
     }
@@ -87,9 +86,9 @@ export class CategoryListComponent {
   }
 
   deleteCategory(id: number) {
-    if (this.isDeleting[id]) return;
+    if (this.isLoading) return;
     
-    this.isDeleting[id] = true;
+    this.isLoading = true;
     this.categoryService.deleteCategory({ categoryId: id }).subscribe({
       next: () => {
         this.UtilsService.snack("Categoria removida com sucesso!", "success");
@@ -99,7 +98,7 @@ export class CategoryListComponent {
         this.UtilsService.snack("Erro ao remover categoria", "error");
       },
       complete: () => {
-        this.isDeleting[id] = false;
+        this.isLoading = false;
       }
     });
   }

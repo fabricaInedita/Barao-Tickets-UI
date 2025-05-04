@@ -28,8 +28,7 @@ export class TicketListComponent {
   public instituicoes: IInstitution[];
   public form: FormGroup;
   public isLoading: boolean = false;
-  public isProcessing: { [key: number]: boolean } = {};
-  public isLoadingLocations: boolean = false;
+  public pagination = { pageSize: 10, totalRecords: 0, page: 0 };
 
   constructor(
     private categoryService: CategoryService,
@@ -93,15 +92,15 @@ export class TicketListComponent {
   }
 
   public handleGetLocations(intitutionId: string): void {
-    this.isLoadingLocations = true;
+    this.isLoading = true;
     this.locationService.getLocation({ intitutionId }).subscribe({
       next: (e) => this.locations = e.data,
-      complete: () => this.isLoadingLocations = false
+      complete: () => this.isLoading = false
     });
   }
 
   public handleProcessTicket(event: MatCheckboxChange, id: number): void {
-    this.isProcessing[id] = true;
+    this.isLoading = true;
     this.ticketService.proccessTicket({ ticketId: id }, { processed: event.checked })
       .subscribe({
         next: () => {
@@ -122,7 +121,7 @@ export class TicketListComponent {
           this.UtilsService.snack("Não foi possível atualizar o status do ticket.", "error");
         },
         complete: () => {
-          this.isProcessing[id] = false;
+          this.isLoading = false;
         }
       });
   }

@@ -4,9 +4,13 @@ import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { env } from '../env';
 import { BaseService } from './base-service';
-import { useErrors } from '../utils/hooks/errors-hook';
 import { ILocation } from '../interfaces/entities/location';
 import { IBaseResponse } from '../interfaces/shared/base-response';
+import { IBaseRequest } from '../interfaces/shared/base-request';
+
+interface IGetLocationRequest extends IBaseRequest {
+    intitutionId: string | null | undefined
+}
 
 @Injectable({ providedIn: 'root' })
 export class LocationService extends BaseService {
@@ -14,7 +18,7 @@ export class LocationService extends BaseService {
         super(http);
     }
 
-    public getLocation(data: { intitutionId: string | null | undefined }): Observable<IBaseResponse<ILocation[]>> {
+    public getLocation(data: IGetLocationRequest | Omit<BaseService, keyof IBaseRequest>): Observable<IBaseResponse<ILocation[]>> {
         return this.get<IBaseResponse<ILocation[]>>({ api: env, href: '/location/get-location' }, data)
             .pipe(
                 map(response => response),

@@ -21,8 +21,7 @@ export class InstitutionListComponent {
   public displayedColumns: string[] = ['name', 'cep', 'actions'];
   public dataSource = new MatTableDataSource<IInstitution>();
   public isLoading: boolean = false;
-  public isSubmitting: boolean = false;
-  public isDeleting: { [key: string]: boolean } = {};
+  public pagination = { pageSize: 10, totalRecords: 0, page: 0 };
 
   constructor(
     private fb: FormBuilder,
@@ -54,8 +53,8 @@ export class InstitutionListComponent {
   }
 
   onSubmit() {
-    if (this.formulario.valid && !this.isSubmitting) {
-      this.isSubmitting = true;
+    if (this.formulario.valid && !this.isLoading) {
+      this.isLoading = true;
       const newInstitution: IInstitution = this.formulario.value;
 
       this.institutionService.postInstitution(newInstitution).subscribe({
@@ -70,7 +69,7 @@ export class InstitutionListComponent {
           this.UtilsService.snack(error.error?.message || "Erro ao adicionar unidade", "error");
         },
         complete: () => {
-          this.isSubmitting = false;
+          this.isLoading = false;
         }
       });
     }
@@ -93,9 +92,9 @@ export class InstitutionListComponent {
   }
 
   deleteInstitution(id: string) {
-    if (this.isDeleting[id]) return;
+    if (this.isLoading) return;
 
-    this.isDeleting[id] = true;
+    this.isLoading = true;
     this.institutionService.deleteInstitution({ institutionId: id }).subscribe({
       next: () => {
         this.UtilsService.snack("Unidade removida com sucesso!", "success");
@@ -103,10 +102,10 @@ export class InstitutionListComponent {
       },
       error: (error) => {
         this.UtilsService.snack(error.error?.message || "Erro ao remover unidade", "error");
-        this.isDeleting[id] = false;
+        this.isLoading = false;
       },
       complete: () => {
-        this.isDeleting[id] = false;
+        this.isLoading = false;
       }
     });
   }
