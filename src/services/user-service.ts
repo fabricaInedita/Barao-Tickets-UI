@@ -78,6 +78,10 @@ export class UserService extends BaseService {
         return this.patch<any>({ api: env, href: '/user/update-password', params: {} }, data)
     }
 
+    public update(data: { userId: string, name: string }) {
+        return this.patch<any>({ api: env, href: '/user/update-name', params: {} }, data)
+    }
+
     public logout(): void {
         console.log("ok")
 

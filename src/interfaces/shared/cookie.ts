@@ -3,6 +3,7 @@ interface ICookies {
     name: string
     accessToken: string
     expirationDateTimeAccessToken: string
+    id: string
 }
 
 export type {

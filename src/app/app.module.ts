@@ -43,8 +43,8 @@ import { UpdatePasswordComponent } from '../dialogs/update-password/update-passw
 import { LoadingScreenComponent } from '../components/loading-screen/loading-screen.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { ProfileComponent } from '../pages/profile/profile.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { ProfileComponent } from '../dialogs/profile/profile.component';
 
 @NgModule({
     declarations: [
