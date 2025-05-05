@@ -30,7 +30,7 @@ export class CategoryService extends BaseService {
     }
 
     public getCategoryOptions(params?: Omit<IGetTicketParams, keyof IBaseRequest>) {
-        return this.get<IBaseResponse<IOptionsResponse[]>>({ api: env, href: '/category/get-category-options' }, params)
+        return this.get<IBaseResponse<IOptionsResponse[]>>({ api: env, href: '/category/get-ticket-category-options' }, params)
     }
 
     public postTicketCategory(data: { description: string }) {

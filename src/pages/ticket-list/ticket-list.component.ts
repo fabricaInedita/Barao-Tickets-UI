@@ -64,7 +64,7 @@ export class TicketListComponent {
   private loadInitialData(): void {
     this.isLoading = true;
 
-    this.categoryService.getCategoryOptions(this.form.value).subscribe({
+    this.categoryService.getCategoryOptions().subscribe({
       next: (e) => this.categorias = e.data,
       complete: () => this.isLoading = false
     });
