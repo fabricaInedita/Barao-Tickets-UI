@@ -57,9 +57,22 @@
                     </mat-select>
                 </mat-form-field>
 
-                <div class="w-full p-2 px-1 pr-4 border-b border-b-[#44474e] bg-[#e0e2ec] rounded-t-sm mb-5">
-                    <mat-checkbox formControlName="process">Exibir processados</mat-checkbox>
-                </div>
+
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Status</mat-label>
+                    <mat-select formControlName="process">
+                        <mat-option [value]="null">Nenhum</mat-option>
+                        <mat-option [value]="true">
+                            Processados
+                        </mat-option>
+                        <mat-option [value]="false">
+                            Não processados
+                        </mat-option>
+                        <mat-option [value]="null">
+                            Todos
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
 
                 <button type="submit" mat-flat-button color="primary" class="w-fit">
                     Pesquisar

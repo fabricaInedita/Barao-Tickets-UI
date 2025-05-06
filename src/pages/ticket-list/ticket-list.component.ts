@@ -55,7 +55,7 @@ export class TicketListComponent {
       studentCode: [null],
       initialDate: [null],
       endDate: [null],
-      process: [false],
+      process: [null],
     });
 
     this.loadInitialData();
