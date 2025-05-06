@@ -34,7 +34,7 @@ export class LocationListComponent {
   public displayedColumns: string[] = ['name', 'cep', 'actions'];
   public dataSource = new MatTableDataSource<ILocation>();
   public isLoading: boolean = false;
-  public pagination = { pageSize: 10, totalRecords: 0, page: 0 };
+  public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
 
   constructor(
     private fb: FormBuilder,
@@ -93,14 +93,14 @@ export class LocationListComponent {
 
     this.isLoading = true;
     this.locationService.getLocation({
-      page: this.pagination.page + 1,
+      page: this.pagination.page,
       pageSize: this.pagination.pageSize,
-      intitutionId: event ?? this.formulario.value.institutionId
+      institutionId: event ?? this.formulario.value.institutionId
     }).subscribe({
       next: (e) => {
-        this.locations = e.data;
-        this.dataSource.data = this.locations;
-        this.isLoading = false;
+        this.dataSource.data = e.data
+
+      this.pagination.totalRecords = e.totalRecords;
       },
       error: () => {
         this.isLoading = false;

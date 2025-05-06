@@ -22,7 +22,7 @@ export class CategoryListComponent {
   public displayedColumns: string[] = ['description', 'actions'];
   public dataSource = new MatTableDataSource<ICategory>();
   public isLoading: boolean = false;
-  public pagination = { pageSize: 10, totalRecords: 0, page: 0 };
+  public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
 
   constructor(
     private fb: FormBuilder,
@@ -74,11 +74,13 @@ export class CategoryListComponent {
   loadCategories() {
     this.isLoading = true;
     this.categoryService.getCategory({
-      page: this.pagination.page + 1,
+      page: this.pagination.page,
       pageSize: this.pagination.pageSize
     }).subscribe({
       next: (e) => {
-        this.dataSource.data = e.data;
+        this.dataSource.data = e.data
+
+      this.pagination.totalRecords = e.totalRecords;
       },
       error: () => {
         this.UtilsService.snack("Erro ao carregar categorias", "error");

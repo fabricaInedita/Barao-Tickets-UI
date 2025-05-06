@@ -38,8 +38,7 @@ export abstract class BaseService {
     );
   }
 
-  protected get<T>(route: Route, params?: any): Observable<T> {
-    route.params = params;
+  protected get<T>(route: Route): Observable<T> {
 
     return this.http.get<T>(this.route(route), { ...this.config() }).pipe(
       catchError(error => {

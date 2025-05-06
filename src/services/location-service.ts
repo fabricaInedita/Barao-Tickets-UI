@@ -10,7 +10,7 @@ import { IBaseRequest } from '../interfaces/shared/base-request';
 import { IOptionsResponse } from '../interfaces/shared/options-response';
 
 interface IGetLocationParams extends IBaseRequest {
-    intitutionId: string | null | undefined
+    institutionId: string | null | undefined
 }
 
 @Injectable({ providedIn: 'root' })
@@ -19,16 +19,16 @@ export class LocationService extends BaseService {
         super(http);
     }
 
-    public getLocation(data: IGetLocationParams) {
-        return this.get<IBaseResponse<ILocation[]>>({ api: env, href: '/location/get-location' }, data)
+    public getLocation(params: IGetLocationParams) {
+        return this.get<IBaseResponse<ILocation[]>>({ api: env, href: '/location/get-location', params })
     }
 
-    public getLocationOptions(data: Omit<IGetLocationParams,keyof IBaseRequest>) {
-        return this.get<IBaseResponse<IOptionsResponse[]>>({ api: env, href: '/location/get-location-options' }, data)
+    public getLocationOptions(params: Omit<IGetLocationParams, keyof IBaseRequest>) {
+        return this.get<IBaseResponse<IOptionsResponse[]>>({ api: env, href: '/location/get-location-options', params })
     }
 
-    public getLocationById(data: { locationId: number }) {
-        return this.get<IBaseResponse<ILocation>>({ api: env, href: '/location/get-location-by-id' }, data)
+    public getLocationById(params: { locationId: number }) {
+        return this.get<IBaseResponse<ILocation>>({ api: env, href: '/location/get-location-by-id', params })
     }
 
     public postLocation(data: Partial<{ name: string | null, description: string | null, insitutionId: string | null }>) {

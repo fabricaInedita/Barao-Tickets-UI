@@ -30,7 +30,7 @@ export class TicketListComponent {
   public instituicoes: IOptionsResponse[];
   public form: FormGroup;
   public isLoading: boolean = false;
-  public pagination = { pageSize: 10, totalRecords: 0, page: 0 };
+  public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
 
   constructor(
     private categoryService: CategoryService,
@@ -89,17 +89,21 @@ export class TicketListComponent {
     this.isLoading = true;
     this.ticketService.getTickets({
       ...this.form.value,
-      page: this.pagination.page + 1,
+      page: this.pagination.page,
       pageSize: this.pagination.pageSize
     }).subscribe({
-      next: (e) => this.dataSource = e.data,
+      next: (e) => {
+        this.dataSource = e.data
+
+      this.pagination.totalRecords = e.totalRecords;
+      },
       complete: () => this.isLoading = false
     });
   }
 
-  public handleGetLocations(intitutionId: string): void {
+  public handleGetLocations(institutionId: string): void {
     this.isLoading = true;
-    this.locationService.getLocationOptions({ intitutionId }).subscribe({
+    this.locationService.getLocationOptions({ institutionId }).subscribe({
       next: (e) => this.locations = e.data,
       complete: () => this.isLoading = false
     });
@@ -107,7 +111,7 @@ export class TicketListComponent {
 
   public handleProcessTicket(event: MatCheckboxChange, id: number): void {
     this.isLoading = true;
-    this.ticketService.proccessTicket({ ticketId: id }, { processed: event.checked })
+    this.ticketService.proccessTicket({ ticketId: id }, { status: event.checked })
       .subscribe({
         next: () => {
           this.dataSource = this.dataSource.map(d => {

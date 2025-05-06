@@ -24,19 +24,19 @@ export class TicketService extends BaseService {
         return this.post<any>({ api: env, href: '/ticket/post-ticket' }, data)
     }
 
-    public proccessTicket(params: { ticketId: string | number | null }, data: { processed: boolean }) {
+    public proccessTicket(params: { ticketId: string | number | null }, data: { status: boolean }) {
         return this.patch<any>({ api: env, href: '/ticket/process-ticket', params: params }, data)
     }
 
     public getTickets(params: IGetTicketsParams): Observable<IBaseResponse<ITicket[]>> {
-        return this.get<any>({ api: env, href: '/ticket/get-ticket' }, params)
+        return this.get<any>({ api: env, href: '/ticket/get-ticket', params })
     }
 
     public getTicketsOptions(params: Omit<IGetTicketsParams, keyof IGetTicketsParams>): Observable<IBaseResponse<IOptionsResponse[]>> {
-        return this.get<any>({ api: env, href: '/ticket/get-ticket-options' }, params)
+        return this.get<any>({ api: env, href: '/ticket/get-ticket-options', params })
     }
 
     public getTicketById(params: { ticketId: string }): Observable<IBaseResponse<ITicket>> {
-        return this.get<any>({ api: env, href: `/ticket/get-ticket-by-id` }, params)
+        return this.get<any>({ api: env, href: `/ticket/get-ticket-by-id`, params })
     }
 }

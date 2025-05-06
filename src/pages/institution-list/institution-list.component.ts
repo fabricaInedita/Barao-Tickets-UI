@@ -23,7 +23,7 @@ export class InstitutionListComponent {
   public displayedColumns: string[] = ['name', 'cep', 'actions'];
   public dataSource = new MatTableDataSource<IInstitution>();
   public isLoading: boolean = false;
-  public pagination = { pageSize: 10, totalRecords: 0, page: 0 };
+  public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
 
   constructor(
     private fb: FormBuilder,
@@ -80,12 +80,13 @@ export class InstitutionListComponent {
   loadInstitutions() {
     this.isLoading = true;
     this.institutionService.getInstitution({
-      page: this.pagination.page + 1,
+      page: this.pagination.page,
       pageSize: this.pagination.pageSize
     }).subscribe({
       next: (e) => {
-        this.instituicoes = e.data;
-        this.dataSource.data = this.instituicoes;
+        this.dataSource.data = e.data
+
+      this.pagination.totalRecords = e.totalRecords;
       },
       error: (error) => {
         this.UtilsService.snack(error.error?.message || "Erro ao carregar unidades", "error");
@@ -117,8 +118,9 @@ export class InstitutionListComponent {
 
 
   onPageChange(event: PageEvent) {
+    console.log(event)
     this.pagination.pageSize = event.pageSize;
-    this.pagination.page = event.pageIndex;
+    this.pagination.page = event.pageIndex + 1;
     this.loadInstitutions();
   }
 }

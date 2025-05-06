@@ -74,7 +74,7 @@ export class SendTicketComponent {
         next: res => {
           const institutionId = res.data.institution.id;
 
-          this.locationService.getLocationOptions({ intitutionId: institutionId }).subscribe({
+          this.locationService.getLocationOptions({ institutionId: institutionId }).subscribe({
             next: locationsRes => {
               this.locations = locationsRes.data;
               this.formulario.reset({
@@ -104,7 +104,7 @@ export class SendTicketComponent {
 
   handleGetLocations(event?: string): void {
     const institutionId = event ?? this.formulario.value.institutionId ?? '';
-    this.locationService.getLocationOptions({ intitutionId: institutionId }).subscribe(res => {
+    this.locationService.getLocationOptions({ institutionId: institutionId }).subscribe(res => {
       this.locations = res.data;
     });
   }

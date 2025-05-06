@@ -22,15 +22,15 @@ export class CategoryService extends BaseService {
     }
 
     public getTicketCategories(params?: any) {
-        return this.get<IBaseResponse<ICategoryTicket[]>>({ api: env, href: '/category/get-ticket-category', }, params)
+        return this.get<IBaseResponse<ICategoryTicket[]>>({ api: env, href: '/category/get-ticket-category', params })
     }
 
     public getCategory(params: IGetTicketParams) {
-        return this.get<IBaseResponse<ICategory[]>>({ api: env, href: '/category/get-category' }, params)
+        return this.get<IBaseResponse<ICategory[]>>({ api: env, href: '/category/get-category', params })
     }
 
     public getCategoryOptions(params?: Omit<IGetTicketParams, keyof IBaseRequest>) {
-        return this.get<IBaseResponse<IOptionsResponse[]>>({ api: env, href: '/category/get-ticket-category-options' }, params)
+        return this.get<IBaseResponse<IOptionsResponse[]>>({ api: env, href: '/category/get-ticket-category-options', params })
     }
 
     public postTicketCategory(data: { description: string }) {

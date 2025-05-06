@@ -21,7 +21,7 @@ export class UserListComponent {
   public displayedColumns: string[] = ['name', 'email', 'actions'];
   public dataSource = new MatTableDataSource<IUser>();
   public isLoading: boolean = false;
-  public pagination = { pageSize: 10, totalRecords: 0, page: 0 };
+  public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
 
   constructor(
     private fb: FormBuilder,
@@ -55,11 +55,13 @@ export class UserListComponent {
   getUsersAdmin() {
     this.isLoading = true;
     this.userService.getColaborator({
-      page: this.pagination.page + 1,
+      page: this.pagination.page,
       pageSize: this.pagination.pageSize
     }).subscribe({
       next: (e) => {
-        this.dataSource.data = e.data;
+        this.dataSource = e.data
+
+      this.pagination.totalRecords = e.totalRecords;
       },
       error: () => {
         this.UtilsService.snack("Erro ao carregar usuários", "error");
