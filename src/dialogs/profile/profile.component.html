@@ -1,0 +1,15 @@
+<div class="flex flex-col gap-6 p-12">
+  <h2 class="font-bold text-2xl">Meu perfil </h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+    <div class="flex justify-center gap-3">
+      <button mat-button (click)="close()" type="button">Cancelar</button>
+      <button mat-button color="primary" type="submit" [disabled]="form.invalid">
+        Salvar
+      </button>
+    </div>
+  </form>
+</div>

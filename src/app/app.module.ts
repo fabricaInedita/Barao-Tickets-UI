@@ -42,6 +42,9 @@ import { TextDialogComponent } from '../dialogs/text-dialog/text-dialog.componen
 import { UpdatePasswordComponent } from '../dialogs/update-password/update-password.component';
 import { LoadingScreenComponent } from '../components/loading-screen/loading-screen.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import { ProfileComponent } from '../dialogs/profile/profile.component';
 
 @NgModule({
     declarations: [
@@ -61,7 +64,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
         UserListComponent,
         TextDialogComponent,
         UpdatePasswordComponent,
-        LoadingScreenComponent
+        LoadingScreenComponent,
+        ProfileComponent
     ],
     imports: [
         BrowserModule,
@@ -76,6 +80,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
         MatInputModule,
         MatTableModule,
         MatDatepickerModule,
+        BrowserModule,
         CommonModule,
         ReactiveFormsModule,
         RouterOutlet,
@@ -85,7 +90,9 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
         MatButtonToggleModule,
         MatDialogModule,
         FormsModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatCheckboxModule,
+        MatPaginatorModule
     ],
     providers: [
         UserService,

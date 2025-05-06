@@ -1,40 +1,38 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ICategory } from '../../interfaces/entities/category';
-import { CategoryService } from '../../services/category-service';
-import { InstitutionService } from '../../services/institution-service';
 import { IInstitution } from '../../interfaces/entities/institution';
+import { InstitutionService } from '../../services/institution-service';
+import { UtilsService } from '../../services/utils-service';
 import { MatTableDataSource } from '@angular/material/table';
+import { IOptionsResponse } from '../../interfaces/shared/options-response';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-send-Ticket',
   standalone: false,
   templateUrl: './institution-list.component.html',
-  styleUrls: ['./institution-list.component.css'],
   host: {
     'class': 'h-screen w-screen'
   }
 })
 export class InstitutionListComponent {
   public formulario: FormGroup;
-  public categorias: ICategory[];
-  public instituicoes: IInstitution[];
+  public categorias: IOptionsResponse[] = [];
+  public instituicoes: IInstitution[] = [];
   public displayedColumns: string[] = ['name', 'cep', 'actions'];
   public dataSource = new MatTableDataSource<IInstitution>();
-  private _snackBar = inject(MatSnackBar);
+  public isLoading: boolean = false;
+  public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
 
   constructor(
     private fb: FormBuilder,
-    private categoryService: CategoryService,
+    private UtilsService: UtilsService,
     private institutionService: InstitutionService,
   ) {
-    this.categorias = [];
-    this.instituicoes = [];
-
     this.formulario = this.fb.group({
       name: ['', Validators.required],
-      cep: ['', Validators.required]
+      cep: ['', [Validators.required, Validators.pattern(/^\d{5}-?\d{3}$/)]]
     });
 
     this.loadInstitutions();
@@ -47,33 +45,82 @@ export class InstitutionListComponent {
 
   getErrorMessage(field: string): string {
     const control = this.formulario.get(field);
-    return control && control.hasError('required') ? 'Este campo é obrigatório.' : '';
+    if (control?.hasError('required')) {
+      return 'Este campo é obrigatório.';
+    }
+    if (control?.hasError('pattern') && field === 'cep') {
+      return 'CEP inválido (formato: 00000-000)';
+    }
+    return '';
   }
 
   onSubmit() {
-    if (this.formulario.valid) {
+    if (this.formulario.valid && !this.isLoading) {
+      this.isLoading = true;
       const newInstitution: IInstitution = this.formulario.value;
-      this.institutionService.postInstitution(newInstitution).subscribe(() => {
-        this._snackBar.open("Instituição adicionada com sucesso!", "Ok");
-        this.formulario.reset();
-        this.formulario.markAsPristine();
-        this.formulario.markAsUntouched();        
-        this.loadInstitutions();
+
+      this.institutionService.postInstitution(newInstitution).subscribe({
+        next: () => {
+          this.UtilsService.snack("Unidade adicionada com sucesso!", "success");
+          this.formulario.reset();
+          this.formulario.markAsPristine();
+          this.formulario.markAsUntouched();
+          this.loadInstitutions();
+        },
+        error: (error) => {
+          this.UtilsService.snack(error.error?.message || "Erro ao adicionar unidade", "error");
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
       });
     }
   }
 
   loadInstitutions() {
-    this.institutionService.getInstitution().subscribe(e => {
-      this.instituicoes = e.data;
-      this.dataSource.data = this.instituicoes;
+    this.isLoading = true;
+    this.institutionService.getInstitution({
+      page: this.pagination.page,
+      pageSize: this.pagination.pageSize
+    }).subscribe({
+      next: (e) => {
+        this.dataSource.data = e.data
+
+      this.pagination.totalRecords = e.totalRecords;
+      },
+      error: (error) => {
+        this.UtilsService.snack(error.error?.message || "Erro ao carregar unidades", "error");
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
     });
   }
 
   deleteInstitution(id: string) {
-    this.institutionService.deleteInstitution({ institutionId: id }).subscribe(() => {
-      this._snackBar.open("Instituição removida com sucesso!", "Ok");
-      this.loadInstitutions();
+    if (this.isLoading) return;
+
+    this.isLoading = true;
+    this.institutionService.deleteInstitution({ institutionId: id }).subscribe({
+      next: () => {
+        this.UtilsService.snack("Unidade removida com sucesso!", "success");
+        this.loadInstitutions();
+      },
+      error: (error) => {
+        this.UtilsService.snack(error.error?.message || "Erro ao remover unidade", "error");
+        this.isLoading = false;
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
     });
+  }
+
+
+  onPageChange(event: PageEvent) {
+    console.log(event)
+    this.pagination.pageSize = event.pageSize;
+    this.pagination.page = event.pageIndex + 1;
+    this.loadInstitutions();
   }
 }

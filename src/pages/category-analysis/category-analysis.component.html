@@ -1,13 +1,36 @@
 <div class="w-full h-full overflow-auto flex p-8 pt-24 pb-12">
-    <app-card [overflow]="false" [title]="'Análise de categorias'">
+    <app-loading-screen [isLoading]="isLoading"></app-loading-screen>
+    <app-card [overflow]="false" [title]="'Análise de quantitativa de categorias'">
         <form (submit)="filtrar()" [formGroup]="form" class="flex gap-3 items-end flex-wrap w-full">
+            <mat-form-field class="max-w-60 w-full" appearance="fill">
+                <mat-label>Unidade</mat-label>
+                <mat-select (selectionChange)="handleGetLocations($event.value)" formControlName="institutionId">
+                    <mat-option [value]="null">
+                        Todas
+                    </mat-option>
+                    <mat-option *ngFor="let instituicao of instituicoes" [value]="instituicao.value">
+                        {{ instituicao.description }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="max-w-60 w-full" appearance="fill">
+                <mat-label>Ambiente</mat-label>
+                <mat-select formControlName="locationId">
+                    <mat-option [value]="null">
+                        Todos
+                    </mat-option>
+                    <mat-option *ngFor="let location of locations" [value]="location.value">
+                        {{ location.description }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
             <mat-form-field class="max-w-60 w-full" appearance="fill">
                 <mat-label>Categoria</mat-label>
                 <mat-select formControlName="categoryId">
                     <mat-option [value]="null">
                         Todas
                     </mat-option>
-                    <mat-option *ngFor="let categoria of categorias" [value]="categoria.categoryId">
+                    <mat-option *ngFor="let categoria of categorias" [value]="categoria.value">
                         {{ categoria.description }}
                     </mat-option>
                 </mat-select>
@@ -20,7 +43,7 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <button mat-raised-button color="primary" class="mb-6">
+            <button mat-flat-button color="primary" class="mb-6">
                 Pesquisar
             </button>
         </form>
@@ -36,5 +59,8 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
+        <mat-paginator [length]="pagination.totalRecords" [pageSize]="pagination.pageSize"
+            (page)="onPageChange($event)">
+        </mat-paginator>
     </app-card>
-</div>
+</div>  

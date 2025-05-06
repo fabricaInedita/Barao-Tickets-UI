@@ -5,6 +5,9 @@ class CookiesService {
     public get(cookie: keyof ICookies) {
         return Cookies.get(cookie)
     }
+    public set(cookie: keyof ICookies, value: string) {
+        return Cookies.set(cookie, value)
+    }
 }
 
 const cookiesService = new CookiesService()

@@ -7,6 +7,12 @@ import { BaseService } from './base-service';
 import { useErrors } from '../utils/hooks/errors-hook';
 import { ITicket } from '../interfaces/entities/ticket';
 import { IBaseResponse } from '../interfaces/shared/base-response';
+import { IOptionsResponse } from '../interfaces/shared/options-response';
+import { IBaseRequest } from '../interfaces/shared/base-request';
+
+interface IGetTicketsParams extends IBaseRequest {
+
+}
 
 @Injectable({ providedIn: 'root' })
 export class TicketService extends BaseService {
@@ -16,34 +22,21 @@ export class TicketService extends BaseService {
 
     public postTicket(data: any): Observable<any> {
         return this.post<any>({ api: env, href: '/ticket/post-ticket' }, data)
-            .pipe(
-                map(response => response),
-                catchError(error => {
-                    
-                    throw error;
-                })
-            );
     }
 
-    public getTickets(params: any): Observable<IBaseResponse<ITicket[]>> {
-        return this.get<any>({ api: env, href: '/ticket/get-ticket' }, params)
-            .pipe(
-                map(response => response),
-                catchError(error => {
-                    
-                    throw error;
-                })
-            );
+    public proccessTicket(params: { ticketId: string | number | null }, data: { status: boolean }) {
+        return this.patch<any>({ api: env, href: '/ticket/process-ticket', params: params }, data)
+    }
+
+    public getTickets(params: IGetTicketsParams): Observable<IBaseResponse<ITicket[]>> {
+        return this.get<any>({ api: env, href: '/ticket/get-ticket', params })
+    }
+
+    public getTicketsOptions(params: Omit<IGetTicketsParams, keyof IGetTicketsParams>): Observable<IBaseResponse<IOptionsResponse[]>> {
+        return this.get<any>({ api: env, href: '/ticket/get-ticket-options', params })
     }
 
     public getTicketById(params: { ticketId: string }): Observable<IBaseResponse<ITicket>> {
-        return this.get<any>({ api: env, href: `/ticket/get-ticket-by-id` }, params)
-            .pipe(
-                map(response => response),
-                catchError(error => {
-                    
-                    throw error;
-                })
-            );
+        return this.get<any>({ api: env, href: `/ticket/get-ticket-by-id`, params })
     }
 }

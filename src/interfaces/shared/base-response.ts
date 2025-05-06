@@ -1,7 +1,8 @@
 export interface IBaseResponse<T> {
     errors: any
-    sucess: boolean
-    pages: number
-    currentPage: number
+    success: boolean
+    pageSize: number
+    page:number
+    totalRecords:number
     data: T
 }

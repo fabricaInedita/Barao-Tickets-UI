@@ -6,6 +6,7 @@ import { CookiesService } from '../../services/cookies-service';
 import { AUTH } from '../../config/auth-config';
 import { UpdatePasswordComponent } from '../../dialogs/update-password/update-password.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ProfileComponent } from '../../dialogs/profile/profile.component';
 
 @Component({
   selector: 'app-layout',
@@ -27,7 +28,7 @@ export class LayoutComponent {
   ) {
     this.userType = this.cookieService.get("type")
     this.nome = this.cookieService.get("name") ?? ""
-    this.items = Object.values(ROUTE_CONFIG).filter(e => e.sidebar && (this.userType && e.claim?.includes(this.userType) || AUTH.DISABLE_AUTH)) 
+    this.items = Object.values(ROUTE_CONFIG).filter(e => e.sidebar && (this.userType && e.claim?.includes(this.userType) || AUTH.DISABLE_AUTH))
   }
 
   toggleDrawer() {
@@ -41,6 +42,14 @@ export class LayoutComponent {
   updatePassword() {
     const dialogRef = this.dialog.open(UpdatePasswordComponent, {
       width: '400px',
+    });
+  }
+
+  updateProfile() {
+    const dialogRef = this.dialog.open(ProfileComponent, {
+      width: '400px',
+    }).afterClosed().subscribe(e => {
+      this.nome = this.cookieService.get("name") ?? ""
     });
   }
 }

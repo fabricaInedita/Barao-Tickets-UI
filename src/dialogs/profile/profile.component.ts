@@ -4,32 +4,37 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { UserService } from '../../services/user-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UtilsService } from '../../services/utils-service';
+import { CookiesService } from '../../services/cookies-service';
 
 @Component({
   selector: 'app-update-password',
   standalone: false,
-  templateUrl: './update-password.component.html'
+  templateUrl: './profile.component.html'
 })
-export class UpdatePasswordComponent {
+export class ProfileComponent {
   public form: FormGroup;
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
-    private dialogRef: MatDialogRef<UpdatePasswordComponent>,
-    private UtilsService: UtilsService
+    private dialogRef: MatDialogRef<ProfileComponent>,
+    private UtilsService: UtilsService,
+    private cookieService: CookiesService
   ) {
     this.form = this.fb.group({
-      currentPassword: [null, Validators.required],
-      password: [null, Validators.required],
+      name: [this.cookieService.get("name"), Validators.required],
     });
   }
 
   submit(): void {
     if (this.form.valid) {
-      this.userService.changePassword(this.form.value)
+      this.userService.update({
+        ...this.form.value,
+        userId: this.cookieService.get("id")
+      })
         .subscribe(
           e => {
-            this.UtilsService.snack("Senha alterada com sucesso!", "success")
+            this.cookieService.set("name",this.form.value.name)
+            this.UtilsService.snack("Informações alteradas com sucesso!", "success")
             this.dialogRef.close(this.form.value);
           }
         )

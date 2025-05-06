@@ -1,11 +1,12 @@
 <div class="w-full h-full overflow-auto flex p-8 pt-24 pb-12">
-    <app-card [overflow]="false" [title]="'Cadastro de ambientes'">
+    <app-loading-screen [isLoading]="isLoading"></app-loading-screen>
+    <app-card [overflow]="false" [title]="'Ambientes'">
         <form [formGroup]="formulario" class="flex gap-3 items-end flex-wrap w-full">
             <mat-form-field appearance="fill">
                 <mat-label>Unidade</mat-label>
                 <mat-select (selectionChange)="handleGetLocations($event.value)" formControlName="institutionId">
-                    <mat-option *ngFor="let instituicao of instituicoes" [value]="instituicao.id">
-                        {{ instituicao.name }}
+                    <mat-option *ngFor="let instituicao of instituicoes" [value]="instituicao.value">
+                        {{ instituicao.description }}
                     </mat-option>
                 </mat-select>
                 <mat-error *ngIf="isFieldInvalid('institutionId')">
@@ -20,7 +21,7 @@
                 <mat-label>Descrição</mat-label>
                 <input matInput formControlName="description" />
             </mat-form-field>
-            <button mat-raised-button color="primary" class="mb-6" (click)="onSubmit()">
+            <button mat-flat-button color="primary" class="mb-6" (click)="onSubmit()">
                 Adicionar
             </button>
         </form>
@@ -37,7 +38,7 @@
                 <th mat-header-cell *matHeaderCellDef> </th>
                 <td mat-cell *matCellDef="let element">
                     <div class="w-full flex justify-end">
-                        <button mat-raised-button color="warn" (click)="deleteInstitution(element.id)">
+                        <button mat-flat-button color="warn" (click)="deleteInstitution(element.id)">
                             Deletar
                         </button>
                     </div>
@@ -46,5 +47,8 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
+        <mat-paginator [length]="pagination.totalRecords" [pageSize]="pagination.pageSize"
+            (page)="onPageChange($event)">
+        </mat-paginator>
     </app-card>
 </div>

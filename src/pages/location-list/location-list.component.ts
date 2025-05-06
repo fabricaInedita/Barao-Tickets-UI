@@ -8,6 +8,9 @@ import { IInstitution } from '../../interfaces/entities/institution';
 import { MatTableDataSource } from '@angular/material/table';
 import { LocationService } from '../../services/location-service';
 import { ILocation } from '../../interfaces/entities/location';
+import { UtilsService } from '../../services/utils-service';
+import { IOptionsResponse } from '../../interfaces/shared/options-response';
+import { PageEvent } from '@angular/material/paginator';
 
 export interface LocationPostSchema {
   name: AbstractControl<string | null>,
@@ -19,24 +22,25 @@ export interface LocationPostSchema {
   selector: 'app-location-list',
   standalone: false,
   templateUrl: './location-list.component.html',
-  styleUrls: ['./location-list.component.css'],
   host: {
     'class': 'h-screen w-screen'
   }
 })
 export class LocationListComponent {
   public formulario: FormGroup<LocationPostSchema>;
-  public categorias: ICategory[];
-  public instituicoes: IInstitution[];
+  public categorias: IOptionsResponse[];
+  public instituicoes: IOptionsResponse[];
   public locations: ILocation[];
   public displayedColumns: string[] = ['name', 'cep', 'actions'];
   public dataSource = new MatTableDataSource<ILocation>();
-  private _snackBar = inject(MatSnackBar);
+  public isLoading: boolean = false;
+  public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
 
   constructor(
     private fb: FormBuilder,
     private locationService: LocationService,
     private institutionService: InstitutionService,
+    private UtilsService: UtilsService
   ) {
     this.categorias = [];
     this.instituicoes = [];
@@ -48,8 +52,7 @@ export class LocationListComponent {
       institutionId: this.fb.control<string | null>(null, Validators.required),
     });
 
-
-    this.institutionService.getInstitution().subscribe(e => {
+    this.institutionService.getInstitutionOptions().subscribe(e => {
       this.instituicoes = e.data
     })
 
@@ -68,12 +71,17 @@ export class LocationListComponent {
 
   onSubmit() {
     if (this.formulario.valid) {
-      this.locationService.postLocation(this.formulario.value).subscribe(() => {
-        this._snackBar.open("Instituição adicionada com sucesso!", "Ok");
-        this.formulario.reset({ description: "", name: "", institutionId: this.formulario.value.institutionId });
-        this.formulario.markAsPristine();
-        this.formulario.markAsUntouched();
-        this.handleGetLocations();
+      this.isLoading = true;
+      this.locationService.postLocation(this.formulario.value).subscribe({
+        next: () => {
+          this.UtilsService.snack("Ambiente adicionada com sucesso!","success");
+          this.formulario.reset();
+          this.isLoading = false;
+          this.handleGetLocations();
+        },
+        error: () => {
+          this.isLoading = false;
+        }
       });
     }
   }
@@ -83,16 +91,40 @@ export class LocationListComponent {
       return;
     }
 
-    this.locationService.getLocation({ intitutionId: event ?? this.formulario.value.institutionId}).subscribe(e => {
-      this.locations = e.data;
-      this.dataSource.data = this.locations;
+    this.isLoading = true;
+    this.locationService.getLocation({
+      page: this.pagination.page,
+      pageSize: this.pagination.pageSize,
+      institutionId: event ?? this.formulario.value.institutionId
+    }).subscribe({
+      next: (e) => {
+        this.dataSource.data = e.data
+
+      this.pagination.totalRecords = e.totalRecords;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
     });
   }
 
   deleteInstitution(id: string) {
-    this.locationService.deleteLocation({ institutionId: id }).subscribe(() => {
-      this._snackBar.open("Instituição removida com sucesso!", "Ok");
-      this.handleGetLocations();
+    this.isLoading = true;
+    this.locationService.deleteLocation({ institutionId: id }).subscribe({
+      next: () => {
+        this.UtilsService.snack("Ambiente removida com sucesso!","success");
+        this.isLoading = false;
+        this.handleGetLocations();
+      },
+      error: () => {
+        this.isLoading = false;
+      }
     });
+  }
+
+  onPageChange(event: PageEvent) {
+    this.pagination.pageSize = event.pageSize;
+    this.pagination.page = event.pageIndex;
+    this.handleGetLocations();
   }
 }

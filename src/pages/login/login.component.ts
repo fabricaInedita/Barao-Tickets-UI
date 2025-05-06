@@ -7,7 +7,6 @@ import { UserService } from '../../services/user-service';
   selector: 'app-login',
   standalone: false,
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
   host: {
     'class': 'flex flex-col w-full'
   }
@@ -16,6 +15,7 @@ export class LoginComponent {
   public formulario: FormGroup;
   public ROUTE_CONFIG: typeof ROUTE_CONFIG
   public isLoading: boolean = false
+  public forgotPasswordMessage = false
 
   constructor(
     private fb: FormBuilder,
@@ -30,7 +30,7 @@ export class LoginComponent {
 
   public handleLogin() {
     this.isLoading = true
-    
+
     this.UserService.loginPost(this.formulario.value).subscribe(
       e => {
         this.isLoading = false

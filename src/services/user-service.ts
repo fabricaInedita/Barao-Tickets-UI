@@ -8,6 +8,11 @@ import { BaseService } from './base-service';
 import { useErrors } from '../utils/hooks/errors-hook';
 import { Router } from '@angular/router';
 import { IBaseResponse } from '../interfaces/shared/base-response';
+import { IBaseRequest } from '../interfaces/shared/base-request';
+
+interface IGetUsersParams extends IBaseRequest {
+
+}
 
 @Injectable({ providedIn: 'root' })
 export class UserService extends BaseService {
@@ -33,13 +38,13 @@ export class UserService extends BaseService {
                     Cookies.set(e, value, { expires: Number(response.expirationTimeAccessToken) });
                 });
 
-                if(response.type == "admin"){
+                if (response.type == "admin") {
                     this.router.navigate(['/ticket-list']);
                 }
                 else {
                     this.router.navigate(['/home']);
                 }
-                
+
                 return response;
             }),
             catchError(error => {
@@ -47,6 +52,10 @@ export class UserService extends BaseService {
                 throw error;
             })
         );
+    }
+
+    public forgotPassword(data: { email: string; }): Observable<any> {
+        return this.post<any>({ api: env, href: '/user/forgot-password', params: {} }, data)
     }
 
     public signupAluno(data: { studentCode: string, name: string, password: string, confirmPassword: string }) {
@@ -57,8 +66,8 @@ export class UserService extends BaseService {
         return this.post<IBaseResponse<string>>({ api: env, href: '/user/post-admin-user', params: {} }, data)
     }
 
-    public getColaborator() {
-        return this.get<any>({ api: env, href: '/user/get-admin-list' },)
+    public getColaborator(params: IGetUsersParams) {
+        return this.get<any>({ api: env, href: '/user/get-admin-list', params },)
     }
 
     public deleteColaborator(params: { userId: string }) {
@@ -67,6 +76,10 @@ export class UserService extends BaseService {
 
     public changePassword(data: { password: string, currentPassword: string }) {
         return this.patch<any>({ api: env, href: '/user/update-password', params: {} }, data)
+    }
+
+    public update(data: { userId: string, name: string }) {
+        return this.patch<any>({ api: env, href: '/user/update-name', params: {} }, data)
     }
 
     public logout(): void {

@@ -1,22 +1,19 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ICategory } from '../../interfaces/entities/category';
 import { CategoryService } from '../../services/category-service';
 import { InstitutionService } from '../../services/institution-service';
-import { IInstitution } from '../../interfaces/entities/institution';
 import { TicketService } from '../../services/ticket-service';
-import { ILocation } from '../../interfaces/entities/location';
 import { LocationService } from '../../services/location-service';
 import { FastSelectSendTicketComponent } from '../../dialogs/fast-select-send-ticket/fast-select-send-ticket.component';
 import { MatDialog } from '@angular/material/dialog';
 import { forkJoin, tap } from 'rxjs';
+import { UtilsService } from '../../services/utils-service';
+import { IOptionsResponse } from '../../interfaces/shared/options-response';
 
 @Component({
   selector: 'app-send-ticket',
   standalone: false,
   templateUrl: './send-ticket.component.html',
-  styleUrls: ['./send-ticket.component.css'],
   host: {
     'class': 'h-screen w-screen'
   }
@@ -24,11 +21,9 @@ import { forkJoin, tap } from 'rxjs';
 export class SendTicketComponent {
   public isLoading = false;
   public formulario: FormGroup;
-  public categorias: ICategory[] = [];
-  public locations: ILocation[] = [];
-  public instituicoes: IInstitution[] = [];
-
-  private _snackBar = inject(MatSnackBar);
+  public categorias: IOptionsResponse[] = [];
+  public locations: IOptionsResponse[] = [];
+  public instituicoes: IOptionsResponse[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -36,7 +31,8 @@ export class SendTicketComponent {
     private locationService: LocationService,
     private institutionService: InstitutionService,
     private ticketService: TicketService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private UtilsService: UtilsService
   ) {
     this.formulario = this.fb.group({
       title: ['', Validators.required],
@@ -53,8 +49,8 @@ export class SendTicketComponent {
     this.isLoading = true;
 
     forkJoin({
-      getCategory: this.categoryService.getCategory().pipe(tap(res => this.categorias = res.data)),
-      getInstitution: this.institutionService.getInstitution().pipe(
+      getCategory: this.categoryService.getCategoryOptions().pipe(tap(res => this.categorias = res.data)),
+      getInstitution: this.institutionService.getInstitutionOptions().pipe(
         tap(res => {
           this.instituicoes = res.data;
           this.handleFastTicketDialog();
@@ -78,7 +74,7 @@ export class SendTicketComponent {
         next: res => {
           const institutionId = res.data.institution.id;
 
-          this.locationService.getLocation({ intitutionId: institutionId }).subscribe({
+          this.locationService.getLocationOptions({ institutionId: institutionId }).subscribe({
             next: locationsRes => {
               this.locations = locationsRes.data;
               this.formulario.reset({
@@ -108,7 +104,7 @@ export class SendTicketComponent {
 
   handleGetLocations(event?: string): void {
     const institutionId = event ?? this.formulario.value.institutionId ?? '';
-    this.locationService.getLocation({ intitutionId: institutionId }).subscribe(res => {
+    this.locationService.getLocationOptions({ institutionId: institutionId }).subscribe(res => {
       this.locations = res.data;
     });
   }
@@ -119,7 +115,8 @@ export class SendTicketComponent {
     this.isLoading = true;
 
     this.ticketService.postTicket(this.formulario.value).subscribe(() => {
-      this._snackBar.open("Enviado com sucesso!", "Ok");
+      this.UtilsService.snack("Enviado com sucesso!", "success");
+      
       this.formulario.reset();
       this.formulario.markAsPristine();
       this.formulario.markAsUntouched();

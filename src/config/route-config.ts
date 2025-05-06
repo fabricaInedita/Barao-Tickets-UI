@@ -25,8 +25,8 @@ export const ROUTE_CONFIG = {
     TICKET_LIST: {
         routerLink: "/ticket-list",
         path: "ticket-list",
-        titlePage: "Lista de feedbacks",
-        sidebarTitle: "Lista de feedbacks",
+        titlePage: "Lista de tickets",
+        sidebarTitle: "Lista de tickets",
         sidebar: true,
         claim: ["admin"]
     },
@@ -73,8 +73,8 @@ export const ROUTE_CONFIG = {
     INSTITUTION_LIST: {
         routerLink: "/institutions-list",
         path: "institutions-list",
-        titlePage: "Instituições",
-        sidebarTitle: "Instituições",
+        titlePage: "Unidades ",
+        sidebarTitle: "Unidades ",
         sidebar: true,
         claim: ["admin"]
     },

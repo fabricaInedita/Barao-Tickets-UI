@@ -8,6 +8,12 @@ import { useErrors } from '../utils/hooks/errors-hook';
 import { ICategoryTicket } from '../interfaces/entities/category-ticket';
 import { ICategory } from '../interfaces/entities/category';
 import { IBaseResponse } from '../interfaces/shared/base-response';
+import { IOptionsResponse } from '../interfaces/shared/options-response';
+import { IBaseRequest } from '../interfaces/shared/base-request';
+
+interface IGetTicketParams extends IBaseRequest {
+
+}
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService extends BaseService {
@@ -15,47 +21,23 @@ export class CategoryService extends BaseService {
         super(http);
     }
 
-    public getTicketCategories(params?: any): Observable<IBaseResponse<ICategoryTicket[]>> {
-        return this.get<IBaseResponse<ICategoryTicket[]>>({ api: env, href: '/category/get-ticket-category', }, params)
-            .pipe(
-                map(response => response),
-                catchError(error => {
-                    
-                    throw error;
-                })
-            );
+    public getTicketCategories(params?: any) {
+        return this.get<IBaseResponse<ICategoryTicket[]>>({ api: env, href: '/category/get-ticket-category', params })
     }
 
-    public getCategory(params?: any): Observable<IBaseResponse<ICategory[]>> {
-        return this.get<IBaseResponse<ICategory[]>>({ api: env, href: '/category/get-category' }, params)
-            .pipe(
-                map(response => response),
-                catchError(error => {
-                    
-                    throw error;
-                })
-            );
+    public getCategory(params: IGetTicketParams) {
+        return this.get<IBaseResponse<ICategory[]>>({ api: env, href: '/category/get-category', params })
     }
 
-    public postTicketCategory(data: { description: string }): Observable<IBaseResponse<any>> {
+    public getCategoryOptions(params?: Omit<IGetTicketParams, keyof IBaseRequest>) {
+        return this.get<IBaseResponse<IOptionsResponse[]>>({ api: env, href: '/category/get-ticket-category-options', params })
+    }
+
+    public postTicketCategory(data: { description: string }) {
         return this.post<IBaseResponse<any>>({ api: env, href: '/category/post-category' }, data)
-            .pipe(
-                map(response => response),
-                catchError(error => {
-                    
-                    throw error;
-                })
-            );
     }
 
-    public deleteCategory(params: { categoryId: number }): Observable<IBaseResponse<any>> {
+    public deleteCategory(params: { categoryId: number }) {
         return this.delete<IBaseResponse<any>>({ api: env, href: `/category/delete-category` }, params)
-            .pipe(
-                map(response => response),
-                catchError(error => {
-                    
-                    throw error;
-                })
-            );
     }
 }
