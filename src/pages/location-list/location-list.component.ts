@@ -99,10 +99,9 @@ export class LocationListComponent {
     }).subscribe({
       next: (e) => {
         this.dataSource.data = e.data
-
-      this.pagination.totalRecords = e.totalRecords;
+        this.pagination.totalRecords = e.totalRecords;
       },
-      error: () => {
+      complete: () => {
         this.isLoading = false;
       }
     });

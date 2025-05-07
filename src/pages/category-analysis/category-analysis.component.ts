@@ -36,14 +36,15 @@ export class CategoryAnalysisComponent {
   ) {
     this.displayedColumns = ['categoria', 'numero'];
     this.categorias = [];
-    this.ordem = [{ label: 'Sem filtro', value: null }, { label: 'Decrescente', value: true }, { label: 'Crescente', value: false },];
+    this.ordem = [ { label: 'Decrescente', value: true }, { label: 'Crescente', value: false },];
     this.dataSource = [];
 
     this.form = this.fb.group({
       categoryId: [null],
       isDescending: [null],
       institutionId: [null],
-      locationId: [null]
+      locationId: [null],
+      isInactive: [false]
     });
 
     this.loadData();
@@ -53,11 +54,9 @@ export class CategoryAnalysisComponent {
     this.isLoading = true;
 
     forkJoin({
-      categories: this.categoryService.getCategoryOptions(),
       institutions: this.institutionService.getInstitutionOptions()
     }).subscribe({
       next: (results) => {
-        this.categorias = results.categories.data;
         this.instituicoes = results.institutions.data;
         this.loadTicketCategories();
       },

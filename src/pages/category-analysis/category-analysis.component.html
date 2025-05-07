@@ -1,6 +1,6 @@
 <div class="w-full h-full overflow-auto flex p-8 pt-24 pb-12">
     <app-loading-screen [isLoading]="isLoading"></app-loading-screen>
-    <app-card [overflow]="false" [title]="'Análise de quantitativa de categorias'">
+    <app-card [overflow]="false" [title]="'Análise quantitativa de categorias'">
         <form (submit)="filtrar()" [formGroup]="form" class="flex gap-3 items-end flex-wrap w-full">
             <mat-form-field class="max-w-60 w-full" appearance="fill">
                 <mat-label>Unidade</mat-label>
@@ -25,24 +25,27 @@
                 </mat-select>
             </mat-form-field>
             <mat-form-field class="max-w-60 w-full" appearance="fill">
-                <mat-label>Categoria</mat-label>
-                <mat-select formControlName="categoryId">
-                    <mat-option [value]="null">
-                        Todas
-                    </mat-option>
-                    <mat-option *ngFor="let categoria of categorias" [value]="categoria.value">
-                        {{ categoria.description }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field class="max-w-60 w-full" appearance="fill">
-                <mat-label>Ordem</mat-label>
+                <mat-label>Ordenação</mat-label>
                 <mat-select formControlName="isDescending">
                     <mat-option *ngFor="let item of ordem" [value]="item.value">
                         {{ item.label }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
+            
+            <mat-form-field class="max-w-60 w-full" appearance="fill">
+                <mat-label>Exibição</mat-label>
+                <mat-select formControlName="isDescending">
+                    <mat-option *ngFor="let item of ordem" [value]="item.value">
+                        {{ item.label }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-checkbox formControlName="isInactive" class="mb-2">
+                Exibir categorias excluídas 
+            </mat-checkbox>
+
             <button mat-flat-button color="primary" class="mb-6">
                 Pesquisar
             </button>
