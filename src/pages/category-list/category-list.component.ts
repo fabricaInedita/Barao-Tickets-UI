@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ICategory } from '../../interfaces/entities/category';
 import { CategoryService } from '../../services/category-service';
 import { MatTableDataSource } from '@angular/material/table';
 import { UtilsService } from '../../services/utils-service';
-import { IOptionsResponse } from '../../interfaces/shared/options-response';
 import { PageEvent } from '@angular/material/paginator';
 
 @Component({
@@ -34,7 +32,7 @@ export class CategoryListComponent {
     this.categorias = [];
 
     this.formulario = this.fb.group({
-      description: ['', Validators.required]
+      description: ['', [Validators.required, Validators.maxLength(100)]]
     });
   }
 
@@ -44,12 +42,18 @@ export class CategoryListComponent {
 
   isFieldInvalid(field: string): boolean | null {
     const control = this.formulario.get(field);
-    return control && control.invalid && control.touched;
+    return control && control.invalid && (control.touched || control.dirty);
   }
 
   getErrorMessage(field: string): string {
     const control = this.formulario.get(field);
-    return control && control.hasError('required') ? 'Este campo é obrigatório.' : '';
+    if (control?.hasError('required')) {
+      return 'Este campo é obrigatório.';
+    }
+    if (control?.hasError('maxlength')) {
+      return 'O tamanho máximo é de 100 caracteres';
+    }
+    return '';
   }
 
   onSubmit() {
@@ -58,36 +62,36 @@ export class CategoryListComponent {
       const categoryData = this.formulario.value;
 
       if (this.isEditing && this.currentEditId) {
-        // Atualizar categoria existente
         this.categoryService.updateCategory({categoryId: this.currentEditId }, categoryData).subscribe({
           next: () => {
             this.UtilsService.snack("Categoria atualizada com sucesso!", "success");
             this.resetForm();
             this.loadCategories();
           },
-          error: () => {
-            this.UtilsService.snack("Erro ao atualizar categoria", "error");
+          error: (error) => {
+            this.UtilsService.snack(error.error?.message || "Erro ao atualizar categoria", "error");
           },
           complete: () => {
             this.isLoading = false;
           }
         });
       } else {
-        // Criar nova categoria
         this.categoryService.postTicketCategory(categoryData).subscribe({
           next: () => {
             this.UtilsService.snack("Categoria adicionada com sucesso!", "success");
             this.resetForm();
             this.loadCategories();
           },
-          error: () => {
-            this.UtilsService.snack("Erro ao adicionar categoria", "error");
+          error: (error) => {
+            this.UtilsService.snack(error.error?.message || "Erro ao adicionar categoria", "error");
           },
           complete: () => {
             this.isLoading = false;
           }
         });
       }
+    } else {
+      this.formulario.markAllAsTouched();
     }
   }
 
@@ -97,6 +101,7 @@ export class CategoryListComponent {
     this.formulario.patchValue({
       description: category.description
     });
+    this.formulario.markAsTouched();
   }
 
   cancelEdit() {
@@ -121,8 +126,8 @@ export class CategoryListComponent {
         this.dataSource.data = e.data;
         this.pagination.totalRecords = e.totalRecords;
       },
-      error: () => {
-        this.UtilsService.snack("Erro ao carregar categorias", "error");
+      error: (error) => {
+        this.UtilsService.snack(error.error?.message || "Erro ao carregar categorias", "error");
       },
       complete: () => {
         this.isLoading = false;
@@ -139,8 +144,9 @@ export class CategoryListComponent {
         this.UtilsService.snack("Categoria removida com sucesso!", "success");
         this.loadCategories();
       },
-      error: () => {
-        this.UtilsService.snack("Erro ao remover categoria", "error");
+      error: (error) => {
+        this.UtilsService.snack(error.error?.message || "Erro ao remover categoria", "error");
+        this.isLoading = false;
       },
       complete: () => {
         this.isLoading = false;
@@ -150,7 +156,7 @@ export class CategoryListComponent {
 
   onPageChange(event: PageEvent) {
     this.pagination.pageSize = event.pageSize;
-    this.pagination.page = event.pageIndex + 1; // +1 porque geralmente a paginação começa em 1
+    this.pagination.page = event.pageIndex + 1;
     this.loadCategories();
   }
 }

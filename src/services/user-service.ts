@@ -9,9 +9,10 @@ import { useErrors } from '../utils/hooks/errors-hook';
 import { Router } from '@angular/router';
 import { IBaseResponse } from '../interfaces/shared/base-response';
 import { IBaseRequest } from '../interfaces/shared/base-request';
+import { IUser } from '../interfaces/entities/user';
 
 interface IGetUsersParams extends IBaseRequest {
-
+    userId?: string | undefined | number | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -80,6 +81,10 @@ export class UserService extends BaseService {
 
     public update(data: { userId: string, name: string }) {
         return this.patch<any>({ api: env, href: '/user/update-name', params: {} }, data)
+    }
+
+    public updateUser(params: Omit<IGetUsersParams, keyof IBaseRequest>, data: IUser) {
+        return this.put<IBaseResponse<IUser>>({ api: env, href: '/user/update-user', params }, data)
     }
 
     public logout(): void {

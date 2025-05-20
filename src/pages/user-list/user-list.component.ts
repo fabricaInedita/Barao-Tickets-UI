@@ -9,7 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { PageEvent } from '@angular/material/paginator';
 
 @Component({
-  selector: 'app-category-list',
+  selector: 'app-user-list',
   standalone: false,
   templateUrl: './user-list.component.html',
   host: {
@@ -22,6 +22,8 @@ export class UserListComponent {
   public dataSource = new MatTableDataSource<IUser>();
   public isLoading: boolean = false;
   public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
+  public isEditing: boolean = false;
+  public currentEditId: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -30,15 +32,18 @@ export class UserListComponent {
     private UtilsService: UtilsService
   ) {
     this.formulario = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      name: ['', [Validators.required, Validators.maxLength(100)]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
     });
+  }
+
+  ngOnInit() {
     this.getUsersAdmin();
   }
 
   isFieldInvalid(field: string): boolean | null {
     const control = this.formulario.get(field);
-    return control && control.invalid && control.touched;
+    return control && control.invalid && (control.touched || control.dirty);
   }
 
   getErrorMessage(field: string): string {
@@ -48,6 +53,9 @@ export class UserListComponent {
     }
     if (control?.hasError('email')) {
       return 'Email inválido';
+    }
+    if (control?.hasError('maxlength')) {
+      return 'O tamanho máximo é de 100 caracteres';
     }
     return '';
   }
@@ -59,12 +67,11 @@ export class UserListComponent {
       pageSize: this.pagination.pageSize
     }).subscribe({
       next: (e) => {
-        this.dataSource = e.data
-
-      this.pagination.totalRecords = e.totalRecords;
+        this.dataSource.data = e.data;
+        this.pagination.totalRecords = e.totalRecords;
       },
-      error: () => {
-        this.UtilsService.snack("Erro ao carregar usuários", "error");
+      error: (error) => {
+        this.UtilsService.snack(error.error?.message || "Erro ao carregar usuários", "error");
       },
       complete: () => {
         this.isLoading = false;
@@ -86,24 +93,63 @@ export class UserListComponent {
   onSubmit() {
     if (this.formulario.valid && !this.isLoading) {
       this.isLoading = true;
-      const newUser = this.formulario.value;
+      const userData = this.formulario.value;
 
-      this.userService.signupColaborador(newUser).subscribe({
-        next: (e) => {
-          this.formulario.reset();
-          this.formulario.markAsPristine();
-          this.formulario.markAsUntouched();
-          this.getUsersAdmin();
-          this.abrirDialog(e.data);
-        },
-        error: () => {
-          this.UtilsService.snack("Erro ao criar usuário", "error");
-        },
-        complete: () => {
-          this.isLoading = false;
-        }
-      });
+      if (this.isEditing && this.currentEditId) {
+        this.userService.updateUser({ userId: this.currentEditId }, userData).subscribe({
+          next: () => {
+            this.UtilsService.snack("Usuário atualizado com sucesso!", "success");
+            this.resetForm();
+            this.getUsersAdmin();
+          },
+          error: (error) => {
+            this.UtilsService.snack(error.error?.message || "Erro ao atualizar usuário", "error");
+          },
+          complete: () => {
+            this.isLoading = false;
+          }
+        });
+      } else {
+        this.userService.signupColaborador(userData).subscribe({
+          next: (e) => {
+            this.UtilsService.snack("Usuário adicionado com sucesso!", "success");
+            this.resetForm();
+            this.getUsersAdmin();
+            this.abrirDialog(e.data);
+          },
+          error: (error) => {
+            this.UtilsService.snack(error.error?.message || "Erro ao criar usuário", "error");
+          },
+          complete: () => {
+            this.isLoading = false;
+          }
+        });
+      }
+    } else {
+      this.formulario.markAllAsTouched();
     }
+  }
+
+  editUser(user: IUser) {
+    this.isEditing = true;
+    this.currentEditId = user.id;
+    this.formulario.patchValue({
+      name: user.name,
+      email: user.email
+    });
+    this.formulario.markAsTouched();
+  }
+
+  cancelEdit() {
+    this.resetForm();
+  }
+
+  resetForm() {
+    this.formulario.reset();
+    this.formulario.markAsPristine();
+    this.formulario.markAsUntouched();
+    this.isEditing = false;
+    this.currentEditId = null;
   }
 
   deleteUser(id: string) {
@@ -115,8 +161,9 @@ export class UserListComponent {
         this.UtilsService.snack("Usuário removido com sucesso!", "success");
         this.getUsersAdmin();
       },
-      error: () => {
-        this.UtilsService.snack("Erro ao remover usuário", "error");
+      error: (error) => {
+        this.UtilsService.snack(error.error?.message || "Erro ao remover usuário", "error");
+        this.isLoading = false;
       },
       complete: () => {
         this.isLoading = false;
@@ -126,7 +173,7 @@ export class UserListComponent {
 
   onPageChange(event: PageEvent) {
     this.pagination.pageSize = event.pageSize;
-    this.pagination.page = event.pageIndex;
+    this.pagination.page = event.pageIndex + 1;
     this.getUsersAdmin();
   }
 }
