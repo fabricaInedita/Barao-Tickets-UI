@@ -1,44 +1,72 @@
-<section class="bg-b-dark-blue min-h-screen flex-col w-full flex items-center justify-center gap-6 ">
+<section class="bg-b-dark-blue min-h-screen flex-col w-full flex items-center justify-center gap-6">
     <app-loading-screen [isLoading]="isLoading"></app-loading-screen>
     <div class="max-w-7xl w-11/12 h-full lg:px-0 px-5 py-16">
         <div class="flex items-center justify-center gap-3 flex-col">
-            <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-white  ">
+            <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-white">
                 <img class="w-28 mr-2" src="img/logo-white.png" alt="logo">
             </a>
-            <div *ngIf="!forgotPasswordMessage" class="w-full bg-zinc-50 rounded-lg shadow md:mt-0 sm:max-w-96 xl:p-0">
+
+            <div class="w-full bg-zinc-50 rounded-lg shadow md:mt-0 sm:max-w-96 xl:p-0">
                 <div class="p-6 w-full flex flex-col gap-3">
                     <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl mb-6">
                         Ticket Barão
                     </h1>
-                    <form class="flex flex-col gap-3" [formGroup]="formulario" (ngSubmit)="handleLogin()">
+
+                    <form *ngIf="!isForgotMode" class="flex flex-col gap-3" [formGroup]="formulario"
+                        (ngSubmit)="handleLogin()">
                         <mat-form-field class="example-full-width">
-                            <mat-label>Usuario</mat-label>
+                            <mat-label>Usuário</mat-label>
                             <input matInput formControlName="username">
                         </mat-form-field>
                         <mat-form-field class="example-full-width">
                             <mat-label>Senha</mat-label>
                             <input matInput type="password" formControlName="password">
                         </mat-form-field>
-                        <button
-                            class="rounded bg-b-blue text-white text-center p-3 font-semibold  hover:opacity-90 cursor-pointer">Entrar</button>
+                        <button type="submit"
+                            class="rounded bg-b-blue text-white text-center p-3 font-semibold hover:opacity-90 cursor-pointer">
+                            Entrar
+                        </button>
                     </form>
-                    <div class="flex flex-col gap-3">
-                        <p>Primeiro acesso?<a [routerLink]="ROUTE_CONFIG.SIGNUP.routerLink"
-                                class="cursor-pointer font-bold text-b-dark-blue"> Cadastre-se</a></p>
-                        <p>Esqueceu a senha? <a [routerLink]="ROUTE_CONFIG.SIGNUP.routerLink"
-                                class="cursor-pointer font-bold text-b-dark-blue"> Enviar e-mail de recuperação de
-                                senha</a></p>
+
+                    <form *ngIf="isForgotMode" class="flex flex-col gap-3" [formGroup]="forgotForm"
+                        (ngSubmit)="handleForgotPassword()">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Email</mat-label>
+                            <input matInput type="email" formControlName="email">
+                        </mat-form-field>
+                        <button type="submit"
+                            class="rounded bg-b-blue text-white text-center p-3 font-semibold hover:opacity-90 cursor-pointer">
+                            Recuperar senha
+                        </button>
+
+                        <div *ngIf="forgotPasswordSuccessMessage"
+                            class="w-full bg-green-100 border border-green-300 text-green-700 text-sm rounded-lg p-4 mt-2"
+                            role="alert">
+                            E-mail enviado com sucesso! Verifique sua caixa de entrada para a senha provisória.
+                        </div>
+                    </form>
+
+                    <div class="flex flex-col gap-3 text-sm text-center">
+                        <p *ngIf="!isForgotMode">
+                            Primeiro acesso?
+                            <a [routerLink]="ROUTE_CONFIG.SIGNUP.routerLink"
+                                class="cursor-pointer font-bold text-b-dark-blue">
+                                Cadastre-se
+                            </a>
+                        </p>
+                        <p *ngIf="!isForgotMode">
+                            Esqueceu a senha?
+                            <span (click)="isForgotMode = true" class="cursor-pointer font-bold text-b-dark-blue">
+                                Recuperar senha
+                            </span>
+                        </p>
+                        <p *ngIf="isForgotMode">
+                            <span (click)="handleBack(); forgotPasswordSuccessMessage = false" class="cursor-pointer font-bold text-b-dark-blue">
+                                Voltar para login
+                            </span>
+                        </p>
                     </div>
                 </div>
-            </div>
-            <div *ngIf="forgotPasswordMessage"
-                class="w-full bg-green-100 rounded-lg shadow md:mt-0 sm:max-w-96  p-6 flex flex-col items-center text-center">
-                <h2 class="text-xl font-bold text-green-700">Cadastro Finalizado!</h2>
-                <p class="text-green-600">Um e-mail foi enviado para o endereço cadastrado contendo uma senha provisória
-                    para acesso. Caso não tenha acesso ao e-mail, entre em contato com o suporte.</p>
-                <a [routerLink]="ROUTE_CONFIG.LOGIN.routerLink"
-                    class="mt-4 bg-b-blue text-white p-3 rounded font-semibold hover:opacity-90 cursor-pointer">Ir para
-                    Login</a>
             </div>
         </div>
     </div>

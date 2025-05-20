@@ -13,9 +13,11 @@ import { UserService } from '../../services/user-service';
 })
 export class LoginComponent {
   public formulario: FormGroup;
-  public ROUTE_CONFIG: typeof ROUTE_CONFIG
-  public isLoading: boolean = false
-  public forgotPasswordMessage = false
+  public forgotForm: FormGroup;
+  public ROUTE_CONFIG: typeof ROUTE_CONFIG;
+  public isLoading: boolean = false;
+  public isForgotMode: boolean = false;
+  public forgotPasswordSuccessMessage: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -25,19 +27,38 @@ export class LoginComponent {
       username: [''],
       password: ['']
     });
+
+    this.forgotForm = this.fb.group({
+      email: ['']
+    });
+
     this.ROUTE_CONFIG = ROUTE_CONFIG;
   }
 
   public handleLogin() {
-    this.isLoading = true
+    this.isLoading = true;
 
     this.UserService.loginPost(this.formulario.value).subscribe(
-      e => {
-        this.isLoading = false
+      _ => this.isLoading = false,
+      _ => this.isLoading = false
+    );
+  }
+
+  public handleBack() {
+    this.isForgotMode = false;
+    this.forgotPasswordSuccessMessage = false;
+    this.forgotForm.reset()
+  }
+
+  public handleForgotPassword() {
+    this.isLoading = true;
+
+    this.UserService.forgotPassword({email:this.forgotForm.value.email}).subscribe(
+      _ => {
+        this.isLoading = false;
+        this.forgotPasswordSuccessMessage = true;
       },
-      err => {
-        this.isLoading = false
-      }
-    )
+      _ => this.isLoading = false
+    );
   }
 }
