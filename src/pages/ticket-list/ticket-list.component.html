@@ -19,11 +19,6 @@
                 </mat-form-field>
 
                 <mat-form-field class="w-full" appearance="fill">
-                    <mat-label>Título</mat-label>
-                    <input matInput formControlName="title" />
-                </mat-form-field>
-
-                <mat-form-field class="w-full" appearance="fill">
                     <mat-label>Data inicial</mat-label>
                     <input matInput [matDatepicker]="picker1" formControlName="initialDate">
                     <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
@@ -35,6 +30,11 @@
                     <input matInput [matDatepicker]="picker2" formControlName="endDate">
                     <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
                     <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+                
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Título</mat-label>
+                    <input matInput formControlName="title" />
                 </mat-form-field>
 
                 <mat-form-field class="w-full" appearance="fill">
@@ -61,10 +61,10 @@
                     <mat-label>Status</mat-label>
                     <mat-select formControlName="process">
                         <mat-option [value]="true">
-                            Análisados
+                            Analisados
                         </mat-option>
                         <mat-option [value]="false">
-                            Não Análisados
+                            Não Analisados
                         </mat-option>
                         <mat-option [value]="null">
                             Todos
@@ -104,7 +104,7 @@
                 <td mat-cell *matCellDef="let element"> {{ element.locationName }} </td>
             </ng-container>
             <ng-container matColumnDef="process">
-                <th mat-header-cell *matHeaderCellDef> Processado </th>
+                <th mat-header-cell *matHeaderCellDef> Analisado </th>
                 <td mat-cell *matCellDef="let element">
                     <mat-checkbox [(ngModel)]="element.processed" [checked]="element.processed"
                         (change)="handleProcessTicket($event,element.ticketId)"></mat-checkbox>

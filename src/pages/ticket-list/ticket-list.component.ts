@@ -88,14 +88,18 @@ export class TicketListComponent {
   private loadTickets(): void {
     this.isLoading = true;
     this.ticketService.getTickets({
-      ...this.form.value,
+      ...{
+        ...this.form.value,
+        initialDate: this.form.value.initialDate ? this.form.value.initialDate.toISOString() : null,
+        endDate: this.form.value.endDate ? this.form.value.endDate.toISOString() : null
+      },
       page: this.pagination.page,
       pageSize: this.pagination.pageSize
     }).subscribe({
       next: (e) => {
         this.dataSource = e.data
 
-      this.pagination.totalRecords = e.totalRecords;
+        this.pagination.totalRecords = e.totalRecords;
       },
       complete: () => this.isLoading = false
     });

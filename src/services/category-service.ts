@@ -12,7 +12,7 @@ import { IOptionsResponse } from '../interfaces/shared/options-response';
 import { IBaseRequest } from '../interfaces/shared/base-request';
 
 interface IGetTicketParams extends IBaseRequest {
-
+    categoryId?: string | null | undefined | number
 }
 
 @Injectable({ providedIn: 'root' })
@@ -37,7 +37,11 @@ export class CategoryService extends BaseService {
         return this.post<IBaseResponse<any>>({ api: env, href: '/category/post-category' }, data)
     }
 
-    public deleteCategory(params: { categoryId: number }) {
+    public deleteCategory(params: Omit<IGetTicketParams, keyof IBaseRequest>) {
         return this.delete<IBaseResponse<any>>({ api: env, href: `/category/delete-category` }, params)
+    }
+
+    public updateCategory(params: Omit<IGetTicketParams, keyof IBaseRequest>, data: ICategory) {
+        return this.put<IBaseResponse<ICategory>>({ api: env, href: '/category/update-category', params }, data)
     }
 }

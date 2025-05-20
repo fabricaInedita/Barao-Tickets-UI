@@ -10,7 +10,8 @@ import { IBaseRequest } from '../interfaces/shared/base-request';
 import { IOptionsResponse } from '../interfaces/shared/options-response';
 
 interface IGetLocationParams extends IBaseRequest {
-    institutionId: string | null | undefined
+    institutionId?: string | null | undefined | number
+    locationId?: string | null | undefined | number
 }
 
 @Injectable({ providedIn: 'root' })
@@ -23,11 +24,15 @@ export class LocationService extends BaseService {
         return this.get<IBaseResponse<ILocation[]>>({ api: env, href: '/location/get-location', params })
     }
 
+    public updateLocation(params: Omit<IGetLocationParams, keyof IBaseRequest>, data: ILocation) {
+        return this.put<IBaseResponse<ILocation>>({ api: env, href: '/location/update-location', params }, data)
+    }
+
     public getLocationOptions(params: Omit<IGetLocationParams, keyof IBaseRequest>) {
         return this.get<IBaseResponse<IOptionsResponse[]>>({ api: env, href: '/location/get-location-options', params })
     }
 
-    public getLocationById(params: { locationId: number }) {
+    public getLocationById(params: Omit<IGetLocationParams, keyof IBaseRequest>) {
         return this.get<IBaseResponse<ILocation>>({ api: env, href: '/location/get-location-by-id', params })
     }
 
@@ -35,7 +40,7 @@ export class LocationService extends BaseService {
         return this.post<IBaseResponse<any>>({ api: env, href: '/location/post-location' }, data)
     }
 
-    public deleteLocation(params: { institutionId: string }): Observable<IBaseResponse<any>> {
+    public deleteLocation(params: Omit<IGetLocationParams, keyof IBaseRequest>): Observable<IBaseResponse<any>> {
         return this.delete<IBaseResponse<any>>({ api: env, href: `/location/delete-location` }, params)
     }
 }

@@ -7,7 +7,10 @@
                 <input matInput formControlName="description" />
             </mat-form-field>
             <button mat-flat-button color="primary" class="mb-6" (click)="onSubmit()">
-                Adicionar
+                {{ isEditing ? 'Atualizar' : 'Adicionar' }}
+            </button>
+            <button *ngIf="isEditing" mat-stroked-button color="warn" class="mb-6" (click)="cancelEdit()">
+                Cancelar
             </button>
         </form>
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
@@ -19,9 +22,17 @@
                 <th mat-header-cell *matHeaderCellDef> </th>
                 <td mat-cell *matCellDef="let element">
                     <div class="w-full flex justify-end">
-                        <button mat-flat-button color="warn" (click)="deleteCategory(element.categoryId)">
-                            Deletar
+                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                            <mat-icon>more_vert</mat-icon>
                         </button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="editCategory(element)">
+                                Editar
+                            </button>
+                            <button mat-menu-item (click)="deleteCategory(element.categoryId)">
+                                Deletar
+                            </button>
+                        </mat-menu>
                     </div>
                 </td>
             </ng-container>

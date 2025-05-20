@@ -11,7 +11,7 @@ import { IOptionsResponse } from '../interfaces/shared/options-response';
 import { IBaseRequest } from '../interfaces/shared/base-request';
 
 interface IGetInstituitionParams extends IBaseRequest {
-
+    institutionId?: string | null | undefined
 }
 
 @Injectable({ providedIn: 'root' })
@@ -24,7 +24,7 @@ export class InstitutionService extends BaseService {
         return this.get<IBaseResponse<IInstitution[]>>({ api: env, href: '/institution/get-institution', params })
     }
 
-    public getInstitutionOptions(params?: Omit<IGetInstituitionParams, keyof IGetInstituitionParams>) {
+    public getInstitutionOptions(params?: Omit<IGetInstituitionParams, keyof IBaseRequest>) {
         return this.get<IBaseResponse<IOptionsResponse[]>>({ api: env, href: '/institution/get-institution-options' })
     }
 
@@ -34,5 +34,9 @@ export class InstitutionService extends BaseService {
 
     public deleteInstitution(params: { institutionId: string }) {
         return this.delete<IBaseResponse<any>>({ api: env, href: `/institution/delete-institution` }, params)
+    }
+
+    public updateInstituition(params:  Omit<IGetInstituitionParams, keyof IBaseRequest>, data: IInstitution) {
+        return this.put<IBaseResponse<IInstitution>>({ api: env, href: '/institution/update-institution', params }, data)
     }
 }

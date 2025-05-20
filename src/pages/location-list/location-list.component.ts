@@ -1,62 +1,50 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ICategory } from '../../interfaces/entities/category';
-import { CategoryService } from '../../services/category-service';
-import { InstitutionService } from '../../services/institution-service';
-import { IInstitution } from '../../interfaces/entities/institution';
-import { MatTableDataSource } from '@angular/material/table';
-import { LocationService } from '../../services/location-service';
-import { ILocation } from '../../interfaces/entities/location';
-import { UtilsService } from '../../services/utils-service';
 import { IOptionsResponse } from '../../interfaces/shared/options-response';
+import { ILocation } from '../../interfaces/entities/location';
+import { LocationService } from '../../services/location-service';
+import { InstitutionService } from '../../services/institution-service';
+import { MatTableDataSource } from '@angular/material/table';
 import { PageEvent } from '@angular/material/paginator';
+import { UtilsService } from '../../services/utils-service';
 
-export interface LocationPostSchema {
-  name: AbstractControl<string | null>,
-  description: AbstractControl<string | null>,
-  institutionId: AbstractControl<string | null>
+interface LocationPostSchema {
+  name: AbstractControl<string | null>;
+  description: AbstractControl<string | null>;
+  institutionId: AbstractControl<string | null>;
 }
 
 @Component({
   selector: 'app-location-list',
-  standalone: false,
   templateUrl: './location-list.component.html',
+  standalone: false,
   host: {
     'class': 'h-screen w-screen'
   }
 })
 export class LocationListComponent {
-  public formulario: FormGroup<LocationPostSchema>;
-  public categorias: IOptionsResponse[];
-  public instituicoes: IOptionsResponse[];
-  public locations: ILocation[];
-  public displayedColumns: string[] = ['name', 'cep', 'actions'];
+  public formulario: FormGroup<any>;
+  public instituicoes: IOptionsResponse[] = [];
+  public displayedColumns: string[] = ['name', 'description', 'actions'];
   public dataSource = new MatTableDataSource<ILocation>();
   public isLoading: boolean = false;
   public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
+  public isEditing: boolean = false;
+  public currentEditId: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private locationService: LocationService,
     private institutionService: InstitutionService,
-    private UtilsService: UtilsService
+    private utilsService: UtilsService
   ) {
-    this.categorias = [];
-    this.instituicoes = [];
-    this.locations = [];
-
-    this.formulario = this.fb.group<LocationPostSchema>({
-      description: this.fb.control<string | null>('', Validators.required),
-      name: this.fb.control<string | null>('', Validators.required),
-      institutionId: this.fb.control<string | null>(null, Validators.required),
+    this.formulario = this.fb.group<any>({
+      description: this.fb.control('', Validators.required),
+      name: this.fb.control('', Validators.required),
+      institutionId: this.fb.control(null, Validators.required),
     });
 
-    this.institutionService.getInstitutionOptions().subscribe(e => {
-      this.instituicoes = e.data
-    })
-
-    this.handleGetLocations();
+    this.loadInstitutions();
   }
 
   isFieldInvalid(field: string): boolean | null {
@@ -66,40 +54,94 @@ export class LocationListComponent {
 
   getErrorMessage(field: string): string {
     const control = this.formulario.get(field);
-    return control && control.hasError('required') ? 'Este campo é obrigatório.' : '';
+    return control?.hasError('required') ? 'Este campo é obrigatório.' : '';
   }
 
   onSubmit() {
-    if (this.formulario.valid) {
+    if (this.formulario.valid && !this.isLoading) {
       this.isLoading = true;
-      this.locationService.postLocation(this.formulario.value).subscribe({
-        next: () => {
-          this.UtilsService.snack("Ambiente adicionada com sucesso!","success");
-          this.formulario.reset();
-          this.isLoading = false;
-          this.handleGetLocations();
-        },
-        error: () => {
-          this.isLoading = false;
-        }
-      });
+      const locationData = this.formulario.value;
+
+      if (this.isEditing && this.currentEditId) {
+        this.locationService.updateLocation({ locationId: this.currentEditId }, locationData).subscribe({
+          next: () => {
+            this.utilsService.snack("Ambiente atualizado com sucesso!", "success");
+            this.resetForm();
+            this.handleGetLocations();
+          },
+          error: (error) => {
+            this.utilsService.snack(error.error?.message || "Erro ao atualizar ambiente", "error");
+            this.isLoading = false;
+          }
+        });
+      } else {
+        this.locationService.postLocation(locationData).subscribe({
+          next: () => {
+            this.utilsService.snack("Ambiente adicionado com sucesso!", "success");
+            this.resetForm();
+            this.handleGetLocations();
+          },
+          error: (error) => {
+            this.utilsService.snack(error.error?.message || "Erro ao adicionar ambiente", "error");
+            this.isLoading = false;
+          }
+        });
+      }
     }
   }
 
-  handleGetLocations(event?: string) {
-    if(event == null && this.formulario.value.institutionId == null){
-      return;
-    }
+  editLocation(location: ILocation) {
+    this.isEditing = true;
+    this.currentEditId = location.id;
+    this.formulario.patchValue({
+      name: location.name,
+      description: location.description
+    });
+  }
+
+  cancelEdit() {
+    this.resetForm();
+  }
+
+  resetForm() {
+    this.formulario.patchValue({
+      name: null,
+      description: null
+    });
+    this.formulario.markAsPristine();
+    this.formulario.markAsUntouched();
+    this.isEditing = false;
+    this.currentEditId = null;
+    this.isLoading = false;
+  }
+
+  loadInstitutions() {
+    this.institutionService.getInstitutionOptions().subscribe({
+      next: (e) => {
+        this.instituicoes = e.data;
+      },
+      error: (error) => {
+        this.utilsService.snack(error.error?.message || "Erro ao carregar unidades", "error");
+      }
+    });
+  }
+
+  handleGetLocations(institutionId?: string) {
+    const id = institutionId ?? this.formulario.value.institutionId;
+    if (!id) return;
 
     this.isLoading = true;
     this.locationService.getLocation({
       page: this.pagination.page,
       pageSize: this.pagination.pageSize,
-      institutionId: event ?? this.formulario.value.institutionId
+      institutionId: id
     }).subscribe({
       next: (e) => {
-        this.dataSource.data = e.data
+        this.dataSource.data = e.data;
         this.pagination.totalRecords = e.totalRecords;
+      },
+      error: (error) => {
+        this.utilsService.snack(error.error?.message || "Erro ao carregar ambientes", "error");
       },
       complete: () => {
         this.isLoading = false;
@@ -107,15 +149,14 @@ export class LocationListComponent {
     });
   }
 
-  deleteInstitution(id: string) {
-    this.isLoading = true;
-    this.locationService.deleteLocation({ institutionId: id }).subscribe({
+  deleteLocation(id: string) {
+    this.locationService.deleteLocation({ locationId: id }).subscribe({
       next: () => {
-        this.UtilsService.snack("Ambiente removida com sucesso!","success");
-        this.isLoading = false;
+        this.utilsService.snack("Ambiente removido com sucesso!", "success");
         this.handleGetLocations();
       },
-      error: () => {
+      error: (error) => {
+        this.utilsService.snack(error.error?.message || "Erro ao remover ambiente", "error");
         this.isLoading = false;
       }
     });
@@ -123,7 +164,7 @@ export class LocationListComponent {
 
   onPageChange(event: PageEvent) {
     this.pagination.pageSize = event.pageSize;
-    this.pagination.page = event.pageIndex;
+    this.pagination.page = event.pageIndex + 1;
     this.handleGetLocations();
   }
 }

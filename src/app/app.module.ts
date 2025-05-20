@@ -37,14 +37,16 @@ import { TicketListComponent } from '../pages/ticket-list/ticket-list.component'
 import { LocationListComponent } from '../pages/location-list/location-list.component';
 import { FastSelectSendTicketComponent } from '../dialogs/fast-select-send-ticket/fast-select-send-ticket.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { UserListComponent } from '../pages/user-list/user-list.component';
 import { TextDialogComponent } from '../dialogs/text-dialog/text-dialog.component';
 import { UpdatePasswordComponent } from '../dialogs/update-password/update-password.component';
 import { LoadingScreenComponent } from '../components/loading-screen/loading-screen.component';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ProfileComponent } from '../dialogs/profile/profile.component';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 @NgModule({
     declarations: [
@@ -69,7 +71,7 @@ import { ProfileComponent } from '../dialogs/profile/profile.component';
     ],
     imports: [
         BrowserModule,
-        HttpClientModule,  
+        HttpClientModule,
         RouterModule,
         MatIconModule,
         MatButtonModule,
@@ -90,6 +92,7 @@ import { ProfileComponent } from '../dialogs/profile/profile.component';
         MatButtonToggleModule,
         MatDialogModule,
         FormsModule,
+        MatMenuModule,
         MatProgressSpinnerModule,
         MatCheckboxModule,
         MatPaginatorModule
@@ -100,7 +103,8 @@ import { ProfileComponent } from '../dialogs/profile/profile.component';
         CategoryService,
         TicketService,
         InstitutionService,
-        HttpClient
+        HttpClient,
+        { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' }
     ],
     bootstrap: [AppComponent]
 })

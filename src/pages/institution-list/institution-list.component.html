@@ -1,17 +1,26 @@
 <div class="w-full h-full overflow-auto flex p-8 pt-24 pb-12">
     <app-loading-screen [isLoading]="isLoading"></app-loading-screen>
-    <app-card [overflow]="false" [title]="'Unidades '">
+    <app-card [overflow]="false" [title]="'Unidades'">
         <form [formGroup]="formulario" class="flex gap-3 items-end flex-wrap w-full">
             <mat-form-field class="max-w-60 w-full" appearance="fill">
                 <mat-label>Nome</mat-label>
                 <input matInput formControlName="name" />
+                <mat-error *ngIf="isFieldInvalid('name')">
+                    {{ getErrorMessage('name') }}
+                </mat-error>
             </mat-form-field>
             <mat-form-field class="max-w-60 w-full" appearance="fill">
                 <mat-label>CEP</mat-label>
                 <input matInput formControlName="cep" />
+                <mat-error *ngIf="isFieldInvalid('cep')">
+                    {{ getErrorMessage('cep') }}
+                </mat-error>
             </mat-form-field>
             <button mat-flat-button color="primary" class="mb-6" (click)="onSubmit()">
-                Adicionar
+                {{ isEditing ? 'Atualizar' : 'Adicionar' }}
+            </button>
+            <button *ngIf="isEditing" mat-flat-button color="warn" class="mb-6" (click)="cancelEdit()">
+                Cancelar
             </button>
         </form>
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
@@ -27,12 +36,23 @@
                 <th mat-header-cell *matHeaderCellDef> </th>
                 <td mat-cell *matCellDef="let element">
                     <div class="w-full flex justify-end">
-                        <button mat-flat-button color="warn" (click)="deleteInstitution(element.id)">
-                            Deletar
+                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Ações">
+                            <mat-icon>more_vert</mat-icon>
                         </button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="editInstitution(element)">
+                                <mat-icon>edit</mat-icon>
+                                <span>Editar</span>
+                            </button>
+                            <button mat-menu-item (click)="deleteInstitution(element.id)">
+                                <mat-icon>delete</mat-icon>
+                                <span>Deletar</span>
+                            </button>
+                        </mat-menu>
                     </div>
                 </td>
             </ng-container>
+
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>

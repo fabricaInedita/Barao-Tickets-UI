@@ -15,8 +15,7 @@ import { PageEvent } from '@angular/material/paginator';
   host: {
     'class': 'h-screen w-screen'
   }
-})
-export class InstitutionListComponent {
+})export class InstitutionListComponent {
   public formulario: FormGroup;
   public categorias: IOptionsResponse[] = [];
   public instituicoes: IInstitution[] = [];
@@ -24,6 +23,8 @@ export class InstitutionListComponent {
   public dataSource = new MatTableDataSource<IInstitution>();
   public isLoading: boolean = false;
   public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
+  public isEditing: boolean = false;
+  private editingId: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -57,24 +58,60 @@ export class InstitutionListComponent {
   onSubmit() {
     if (this.formulario.valid && !this.isLoading) {
       this.isLoading = true;
-      const newInstitution: IInstitution = this.formulario.value;
+      const data: IInstitution = this.formulario.value;
 
-      this.institutionService.postInstitution(newInstitution).subscribe({
-        next: () => {
-          this.UtilsService.snack("Unidade adicionada com sucesso!", "success");
-          this.formulario.reset();
-          this.formulario.markAsPristine();
-          this.formulario.markAsUntouched();
-          this.loadInstitutions();
-        },
-        error: (error) => {
-          this.UtilsService.snack(error.error?.message || "Erro ao adicionar unidade", "error");
-        },
-        complete: () => {
-          this.isLoading = false;
-        }
-      });
+      if (this.isEditing && this.editingId) {
+        this.institutionService.updateInstituition({ institutionId: this.editingId },data).subscribe({
+          next: () => {
+            this.UtilsService.snack("Unidade atualizada com sucesso!", "success");
+            this.resetForm();
+            this.loadInstitutions();
+          },
+          error: (error) => {
+            this.UtilsService.snack(error.error?.message || "Erro ao atualizar unidade", "error");
+          },
+          complete: () => {
+            this.isLoading = false;
+          }
+        });
+      } else {
+        this.institutionService.postInstitution(data).subscribe({
+          next: () => {
+            this.UtilsService.snack("Unidade adicionada com sucesso!", "success");
+            this.resetForm();
+            this.loadInstitutions();
+          },
+          error: (error) => {
+            this.UtilsService.snack(error.error?.message || "Erro ao adicionar unidade", "error");
+          },
+          complete: () => {
+            this.isLoading = false;
+          }
+        });
+      }
     }
+  }
+
+  editInstitution(institution: IInstitution) {
+    this.formulario.patchValue({
+      name: institution.name,
+      cep: institution.cep
+    });
+    this.isEditing = true;
+    this.editingId = institution.id;
+    this.formulario.markAsTouched();
+  }
+
+  cancelEdit() {
+    this.resetForm();
+  }
+
+  resetForm() {
+    this.formulario.reset();
+    this.formulario.markAsPristine();
+    this.formulario.markAsUntouched();
+    this.isEditing = false;
+    this.editingId = null;
   }
 
   loadInstitutions() {
@@ -84,9 +121,8 @@ export class InstitutionListComponent {
       pageSize: this.pagination.pageSize
     }).subscribe({
       next: (e) => {
-        this.dataSource.data = e.data
-
-      this.pagination.totalRecords = e.totalRecords;
+        this.dataSource.data = e.data;
+        this.pagination.totalRecords = e.totalRecords;
       },
       error: (error) => {
         this.UtilsService.snack(error.error?.message || "Erro ao carregar unidades", "error");
@@ -116,9 +152,7 @@ export class InstitutionListComponent {
     });
   }
 
-
   onPageChange(event: PageEvent) {
-    console.log(event)
     this.pagination.pageSize = event.pageSize;
     this.pagination.page = event.pageIndex + 1;
     this.loadInstitutions();

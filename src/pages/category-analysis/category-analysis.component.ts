@@ -8,11 +8,13 @@ import { PageEvent } from '@angular/material/paginator';
 import { InstitutionService } from '../../services/institution-service';
 import { LocationService } from '../../services/location-service';
 import { forkJoin } from 'rxjs';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 @Component({
   selector: 'app-category-analysis',
   standalone: false,
   templateUrl: './category-analysis.component.html',
+  providers: [provideNativeDateAdapter()],
   host: {
     'class': 'flex flex-col w-full'
   }
@@ -23,7 +25,7 @@ export class CategoryAnalysisComponent {
   public categorias: IOptionsResponse[];
   public ordem: { label: string, value: boolean | null }[];
   public form: FormGroup;
-  public isLoading: boolean = false; 
+  public isLoading: boolean = false;
   public locations: IOptionsResponse[] = [];
   public instituicoes: IOptionsResponse[] = [];
   public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
@@ -36,7 +38,7 @@ export class CategoryAnalysisComponent {
   ) {
     this.displayedColumns = ['categoria', 'numero'];
     this.categorias = [];
-    this.ordem = [ { label: 'Decrescente', value: true }, { label: 'Crescente', value: false },];
+    this.ordem = [{ label: 'Decrescente', value: true }, { label: 'Crescente', value: false },];
     this.dataSource = [];
 
     this.form = this.fb.group({
@@ -44,7 +46,9 @@ export class CategoryAnalysisComponent {
       isDescending: [null],
       institutionId: [null],
       locationId: [null],
-      isInactive: [false]
+      isInactive: [false],
+      initialDate: [null],
+      endDate: [null]
     });
 
     this.loadData();
@@ -68,43 +72,47 @@ export class CategoryAnalysisComponent {
 
   public loadTicketCategories() {
     this.categoryService.getTicketCategories({
-      ...this.form.value,
+      ...{
+        ...this.form.value,
+        initialDate: this.form.value.initialDate ? this.form.value.initialDate.toISOString() : null,
+        endDate: this.form.value.endDate ? this.form.value.endDate.toISOString() : null
+      },
       page: this.pagination.page,
       pageSize: this.pagination.pageSize
     }).subscribe({
-      next: (e) => {
-        this.dataSource = e.data;
-        this.pagination.totalRecords = e.totalRecords;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      }
+        next: (e) => {
+          this.dataSource = e.data;
+          this.pagination.totalRecords = e.totalRecords;
+          this.isLoading = false;
+        },
+          error: () => {
+            this.isLoading = false;
+          }
     });
   }
 
   public handleGetLocations(institutionId: string | null): void {
-    if (!institutionId) {
-      this.locations = [];
-      this.form.patchValue({ locationId: null });
-      return;
-    }
+  if(!institutionId) {
+    this.locations = [];
+    this.form.patchValue({ locationId: null });
+    return;
+  }
 
     this.locationService.getLocationOptions({ institutionId }).subscribe(res => {
-      this.locations = res.data;
-      this.form.patchValue({ locationId: null });
-    });
-  }
+    this.locations = res.data;
+    this.form.patchValue({ locationId: null });
+  });
+}
 
   public filtrar() {
-    this.isLoading = true;
-    this.pagination.page = 1; // Reset to first page when filtering
-    this.loadTicketCategories();
-  }
+  this.isLoading = true;
+  this.pagination.page = 1; // Reset to first page when filtering
+  this.loadTicketCategories();
+}
 
-  onPageChange(event: PageEvent) {
-    this.pagination.pageSize = event.pageSize;
-    this.pagination.page = event.pageIndex + 1; // Material paginator is 0-based
-    this.loadTicketCategories();
-  }
+  public onPageChange(event: PageEvent) {
+  this.pagination.pageSize = event.pageSize;
+  this.pagination.page = event.pageIndex + 1; // Material paginator is 0-based
+  this.loadTicketCategories();
+}
 }
