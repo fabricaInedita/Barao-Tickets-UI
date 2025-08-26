@@ -48,6 +48,17 @@ export abstract class BaseService {
     );
   }
 
+  protected download(route: Route): Observable<any> {
+    const config: any = { ...this.config(), responseType: "blob" }
+
+    return this.http.get<Blob>(this.route(route), config).pipe(
+      catchError(error => {
+        useErrors(error, this._snackBar);
+        return throwError(() => error);
+      })
+    );
+  }
+
   protected put<T>(route: Route, body: any): Observable<T> {
     return this.http.put<T>(this.route(route), body, this.config()).pipe(
       catchError(error => {

@@ -7,6 +7,7 @@ import { TextDialogComponent } from '../../dialogs/text-dialog/text-dialog.compo
 import { UtilsService } from '../../services/utils-service';
 import { MatTableDataSource } from '@angular/material/table';
 import { PageEvent } from '@angular/material/paginator';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-user-list',
@@ -18,7 +19,7 @@ import { PageEvent } from '@angular/material/paginator';
 })
 export class UserListComponent {
   public formulario: FormGroup;
-  public displayedColumns: string[] = ['name', 'email', 'actions'];
+  public displayedColumns: string[] = ['name', 'email', 'process', 'actions'];
   public dataSource = new MatTableDataSource<IUser>();
   public isLoading: boolean = false;
   public pagination = { pageSize: 10, totalRecords: 0, page: 1 };
@@ -175,5 +176,32 @@ export class UserListComponent {
     this.pagination.pageSize = event.pageSize;
     this.pagination.page = event.pageIndex + 1;
     this.getUsersAdmin();
+  }
+
+  public handleProcessTicket(event: MatCheckboxChange, id: number | string): void {
+    this.isLoading = true;
+    this.userService.setEMail({ userId: id }, { receiveEmail: event.checked })
+      .subscribe({
+        next: () => {
+          this.dataSource.data = this.dataSource.data.map(d => {
+            if (d.id === id) {
+              d.receiveEmails = event.checked;
+            }
+            return d;
+          });
+        },
+        error: () => {
+          this.dataSource.data = this.dataSource.data.map(d => {
+            if (d.id === id) {
+              d.receiveEmails = !event.checked;
+            }
+            return d;
+          });
+          this.UtilsService.snack("Não foi possível atualizar o status do ticket.", "error");
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
+      });
   }
 }

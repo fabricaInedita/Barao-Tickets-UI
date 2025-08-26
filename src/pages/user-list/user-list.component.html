@@ -32,6 +32,13 @@
                 <th mat-header-cell *matHeaderCellDef> E-mail </th>
                 <td mat-cell *matCellDef="let element"> {{ element.email }} </td>
             </ng-container>
+            <ng-container matColumnDef="process">
+                <th mat-header-cell *matHeaderCellDef> Enviar E-Mail </th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [(ngModel)]="element.receiveEmails" [checked]="element.receiveEmails"
+                        (change)="handleProcessTicket($event,element.id)"></mat-checkbox>
+                </td>
+            </ng-container>
             <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef> </th>
                 <td mat-cell *matCellDef="let element">

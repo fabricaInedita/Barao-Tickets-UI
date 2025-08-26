@@ -98,4 +98,8 @@ export class UserService extends BaseService {
 
         this.router.navigate(['/login'])
     }
+
+    public setEMail(params: { userId: string | number | null }, data: { receiveEmail: boolean }) {
+        return this.patch<any>({ api: env, href: '/user/set-received-email', params: params }, data)
+    }
 }

@@ -9,6 +9,7 @@ import { InstitutionService } from '../../services/institution-service';
 import { LocationService } from '../../services/location-service';
 import { forkJoin } from 'rxjs';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { TicketService } from '../../services/ticket-service';
 
 @Component({
   selector: 'app-category-analysis',
@@ -34,7 +35,8 @@ export class CategoryAnalysisComponent {
     private categoryService: CategoryService,
     private fb: FormBuilder,
     private institutionService: InstitutionService,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private ticketService: TicketService
   ) {
     this.displayedColumns = ['categoria', 'numero'];
     this.categorias = [];
@@ -80,39 +82,39 @@ export class CategoryAnalysisComponent {
       page: this.pagination.page,
       pageSize: this.pagination.pageSize
     }).subscribe({
-        next: (e) => {
-          this.dataSource = e.data;
-          this.pagination.totalRecords = e.totalRecords;
-          this.isLoading = false;
-        },
-          error: () => {
-            this.isLoading = false;
-          }
+      next: (e) => {
+        this.dataSource = e.data;
+        this.pagination.totalRecords = e.totalRecords;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
     });
   }
 
   public handleGetLocations(institutionId: string | null): void {
-  if(!institutionId) {
-    this.locations = [];
-    this.form.patchValue({ locationId: null });
-    return;
-  }
+    if (!institutionId) {
+      this.locations = [];
+      this.form.patchValue({ locationId: null });
+      return;
+    }
 
     this.locationService.getLocationOptions({ institutionId }).subscribe(res => {
-    this.locations = res.data;
-    this.form.patchValue({ locationId: null });
-  });
-}
+      this.locations = res.data;
+      this.form.patchValue({ locationId: null });
+    });
+  }
 
   public filtrar() {
-  this.isLoading = true;
-  this.pagination.page = 1; // Reset to first page when filtering
-  this.loadTicketCategories();
-}
+    this.isLoading = true;
+    this.pagination.page = 1; // Reset to first page when filtering
+    this.loadTicketCategories();
+  }
 
   public onPageChange(event: PageEvent) {
-  this.pagination.pageSize = event.pageSize;
-  this.pagination.page = event.pageIndex + 1; // Material paginator is 0-based
-  this.loadTicketCategories();
-}
+    this.pagination.pageSize = event.pageSize;
+    this.pagination.page = event.pageIndex + 1; // Material paginator is 0-based
+    this.loadTicketCategories();
+  }
 }

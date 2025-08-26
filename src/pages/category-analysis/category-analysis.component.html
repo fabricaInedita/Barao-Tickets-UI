@@ -1,57 +1,61 @@
 <div class="w-full h-full overflow-auto flex p-8 pt-24 pb-12">
     <app-loading-screen [isLoading]="isLoading"></app-loading-screen>
     <app-card [overflow]="false" [title]="'Análise quantitativa de categorias'">
-        <form (submit)="filtrar()" [formGroup]="form"
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full items-end">
-            <mat-form-field class="w-full" appearance="fill">
-                <mat-label>Unidade</mat-label>
-                <mat-select (selectionChange)="handleGetLocations($event.value)" formControlName="institutionId">
-                    <mat-option [value]="null">
-                        Todas
-                    </mat-option>
-                    <mat-option *ngFor="let instituicao of instituicoes" [value]="instituicao.value">
-                        {{ instituicao.description }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field class=" w-full" appearance="fill">
-                <mat-label>Ambiente</mat-label>
-                <mat-select formControlName="locationId">
-                    <mat-option [value]="null">
-                        Todos
-                    </mat-option>
-                    <mat-option *ngFor="let location of locations" [value]="location.value">
-                        {{ location.description }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field class="w-full" appearance="fill">
-                <mat-label>Data inicial</mat-label>
-                <input matInput [matDatepicker]="picker1" formControlName="initialDate">
-                <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
-                <mat-datepicker #picker1></mat-datepicker>
-            </mat-form-field>
-            <mat-form-field class="w-full" appearance="fill">
-                <mat-label>Data final</mat-label>
-                <input matInput [matDatepicker]="picker2" formControlName="endDate">
-                <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
-                <mat-datepicker #picker2></mat-datepicker>
-            </mat-form-field>
-            <mat-form-field class="w-full" appearance="fill">
-                <mat-label>Ordenação</mat-label>
-                <mat-select formControlName="isDescending">
-                    <mat-option *ngFor="let item of ordem" [value]="item.value">
-                        {{ item.label }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-checkbox formControlName="isInactive" class="mb-2">
-                Exibir categorias excluídas
-            </mat-checkbox>
-            <button mat-flat-button color="primary" class="mb-6 w-fit">
-                Pesquisar
-            </button>
-        </form>
+        <div class="flex flex-col gap-3">
+            <form [formGroup]="form"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full items-end">
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Unidade</mat-label>
+                    <mat-select (selectionChange)="handleGetLocations($event.value)" formControlName="institutionId">
+                        <mat-option [value]="null">
+                            Todas
+                        </mat-option>
+                        <mat-option *ngFor="let instituicao of instituicoes" [value]="instituicao.value">
+                            {{ instituicao.description }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class=" w-full" appearance="fill">
+                    <mat-label>Ambiente</mat-label>
+                    <mat-select formControlName="locationId">
+                        <mat-option [value]="null">
+                            Todos
+                        </mat-option>
+                        <mat-option *ngFor="let location of locations" [value]="location.value">
+                            {{ location.description }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Data inicial</mat-label>
+                    <input matInput [matDatepicker]="picker1" formControlName="initialDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Data final</mat-label>
+                    <input matInput [matDatepicker]="picker2" formControlName="endDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="w-full" appearance="fill">
+                    <mat-label>Ordenação</mat-label>
+                    <mat-select formControlName="isDescending">
+                        <mat-option *ngFor="let item of ordem" [value]="item.value">
+                            {{ item.label }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-checkbox formControlName="isInactive" class="mb-2">
+                    Exibir categorias excluídas
+                </mat-checkbox>
+            </form>
+            <div class="flex gap-3">
+                <button (click)="filtrar()" mat-flat-button color="primary" class="mb-6 w-fit">
+                    Pesquisar
+                </button>
+            </div>
+        </div>
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
             <ng-container matColumnDef="numero">
                 <th mat-header-cell *matHeaderCellDef> Quantidade</th>

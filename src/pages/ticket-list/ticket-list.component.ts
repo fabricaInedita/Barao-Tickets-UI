@@ -140,9 +140,29 @@ export class TicketListComponent {
       });
   }
 
-  onPageChange(event: PageEvent) {
+  public onPageChange(event: PageEvent) {
     this.pagination.pageSize = event.pageSize;
     this.pagination.page = event.pageIndex;
     this.loadTickets();
+  }
+  
+  public download() {
+    this.ticketService.getReport({
+      ...this.form.value,
+      initialDate: this.form.value.initialDate ? this.form.value.initialDate.toISOString() : null,
+      endDate: this.form.value.endDate ? this.form.value.endDate.toISOString() : null
+    }).subscribe({
+      next: (file) => {
+        const url = window.URL.createObjectURL(file);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'relatorio'; // ou .xlsx dependendo do que vier
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
   }
 }

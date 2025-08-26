@@ -39,4 +39,12 @@ export class TicketService extends BaseService {
     public getTicketById(params: { ticketId: string }): Observable<IBaseResponse<ITicket>> {
         return this.get<any>({ api: env, href: `/ticket/get-ticket-by-id`, params })
     }
+
+    public getReport(params: any) {
+        return this.download({
+            api: env,
+            href: `/ticket/generate-report`,
+            params
+        });
+    }
 }

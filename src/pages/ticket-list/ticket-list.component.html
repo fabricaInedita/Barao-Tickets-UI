@@ -1,82 +1,88 @@
 <div class="w-full h-full overflow-auto flex p-8 pt-24 pb-12">
     <app-loading-screen [isLoading]="isLoading"></app-loading-screen>
     <app-card [overflow]="false" [title]="'Lista de tickets'">
-        <form (submit)="filtrar()" [formGroup]="form">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full items-end">
-                <mat-form-field class="w-full" appearance="fill">
-                    <mat-label>Categoria</mat-label>
-                    <mat-select formControlName="categoryId">
-                        <mat-option [value]="null">Nenhum</mat-option>
-                        <mat-option *ngFor="let categoria of categorias" [value]="categoria.value">
-                            {{ categoria.description }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-                <mat-form-field class="w-full" appearance="fill">
-                    <mat-label>Código de aluno</mat-label>
-                    <input matInput formControlName="studentCode" />
-                </mat-form-field>
-
-                <mat-form-field class="w-full" appearance="fill">
-                    <mat-label>Data inicial</mat-label>
-                    <input matInput [matDatepicker]="picker1" formControlName="initialDate">
-                    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
-                    <mat-datepicker #picker1></mat-datepicker>
-                </mat-form-field>
-
-                <mat-form-field class="w-full" appearance="fill">
-                    <mat-label>Data final</mat-label>
-                    <input matInput [matDatepicker]="picker2" formControlName="endDate">
-                    <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
-                    <mat-datepicker #picker2></mat-datepicker>
-                </mat-form-field>
-                
-                <mat-form-field class="w-full" appearance="fill">
-                    <mat-label>Título</mat-label>
-                    <input matInput formControlName="title" />
-                </mat-form-field>
-
-                <mat-form-field class="w-full" appearance="fill">
-                    <mat-label>Unidade</mat-label>
-                    <mat-select (selectionChange)="handleGetLocations($event.value)" formControlName="institutionId">
-                        <mat-option [value]="null">Nenhum</mat-option>
-                        <mat-option *ngFor="let item of instituicoes" [value]="item.value">
-                            {{ item.description }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-                <mat-form-field class="w-full" appearance="fill">
-                    <mat-label>Ambiente</mat-label>
-                    <mat-select formControlName="locationId">
-                        <mat-option [value]="null">Nenhum</mat-option>
-                        <mat-option *ngFor="let item of locations" [value]="item.value">
-                            {{ item.description }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-                <mat-form-field class="w-full" appearance="fill">
-                    <mat-label>Status</mat-label>
-                    <mat-select formControlName="process">
-                        <mat-option [value]="true">
-                            Analisados
-                        </mat-option>
-                        <mat-option [value]="false">
-                            Não Analisados
-                        </mat-option>
-                        <mat-option [value]="null">
-                            Todos
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-                <button type="submit" mat-flat-button color="primary" class="w-fit">
+        <div class="flex flex-col gap-3">
+            <form [formGroup]="form">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full items-end">
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Categoria</mat-label>
+                        <mat-select formControlName="categoryId">
+                            <mat-option [value]="null">Nenhum</mat-option>
+                            <mat-option *ngFor="let categoria of categorias" [value]="categoria.value">
+                                {{ categoria.description }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+    
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Código de aluno</mat-label>
+                        <input matInput formControlName="studentCode" />
+                    </mat-form-field>
+    
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Data inicial</mat-label>
+                        <input matInput [matDatepicker]="picker1" formControlName="initialDate">
+                        <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                        <mat-datepicker #picker1></mat-datepicker>
+                    </mat-form-field>
+    
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Data final</mat-label>
+                        <input matInput [matDatepicker]="picker2" formControlName="endDate">
+                        <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                    </mat-form-field>
+                    
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Título</mat-label>
+                        <input matInput formControlName="title" />
+                    </mat-form-field>
+    
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Unidade</mat-label>
+                        <mat-select (selectionChange)="handleGetLocations($event.value)" formControlName="institutionId">
+                            <mat-option [value]="null">Nenhum</mat-option>
+                            <mat-option *ngFor="let item of instituicoes" [value]="item.value">
+                                {{ item.description }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+    
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Ambiente</mat-label>
+                        <mat-select formControlName="locationId">
+                            <mat-option [value]="null">Nenhum</mat-option>
+                            <mat-option *ngFor="let item of locations" [value]="item.value">
+                                {{ item.description }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+    
+                    <mat-form-field class="w-full" appearance="fill">
+                        <mat-label>Status</mat-label>
+                        <mat-select formControlName="process">
+                            <mat-option [value]="true">
+                                Analisados
+                            </mat-option>
+                            <mat-option [value]="false">
+                                Não Analisados
+                            </mat-option>
+                            <mat-option [value]="null">
+                                Todos
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </form>
+            <div class="flex gap-3">
+                <button (click)="filtrar()" type="submit" mat-flat-button color="primary" class="w-fit">
                     Pesquisar
                 </button>
+                <button (click)="download()" mat-stroked-button color="primary" class="mb-6 w-fit">
+                    Baixar XLSX
+                </button>
             </div>
-        </form>
+        </div>
 
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
             <ng-container matColumnDef="titulo">
