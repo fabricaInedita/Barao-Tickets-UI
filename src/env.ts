@@ -1,1 +1,1 @@
-export const env = "https://localhost:7246"
+export const env = "https://feedback_api.baraodemaua.net"
