@@ -38,7 +38,7 @@ export class CategoryAnalysisComponent {
     private locationService: LocationService,
     private ticketService: TicketService
   ) {
-    this.displayedColumns = ['categoria', 'numero'];
+    this.displayedColumns = ['categoria', 'número'];
     this.categorias = [];
     this.ordem = [{ label: 'Decrescente', value: true }, { label: 'Crescente', value: false },];
     this.dataSource = [];

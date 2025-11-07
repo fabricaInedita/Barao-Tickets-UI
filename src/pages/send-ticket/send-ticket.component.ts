@@ -72,6 +72,11 @@ export class SendTicketComponent {
 
       this.locationService.getLocationById({ locationId: id }).subscribe({
         next: res => {
+          if (res?.data?.institution?.id == null) {
+            this.UtilsService.snack("Não existem instituições cadastradas.", "error");
+            this.isLoading = false;
+          }
+
           const institutionId = res.data.institution.id;
 
           this.locationService.getLocationOptions({ institutionId: institutionId }).subscribe({
@@ -104,9 +109,16 @@ export class SendTicketComponent {
 
   handleGetLocations(event?: string): void {
     const institutionId = event ?? this.formulario.value.institutionId ?? '';
-    this.locationService.getLocationOptions({ institutionId: institutionId }).subscribe(res => {
-      this.locations = res.data;
-    });
+    this.locationService.getLocationOptions({ institutionId: institutionId }).subscribe(
+      {
+        next: res => {
+          this.locations = res.data;
+          this.isLoading = false
+        },
+        error: () => this.isLoading = false
+      }
+
+    );
   }
 
   onSubmit(): void {
@@ -116,7 +128,7 @@ export class SendTicketComponent {
 
     this.ticketService.postTicket(this.formulario.value).subscribe(() => {
       this.UtilsService.snack("Enviado com sucesso!", "success");
-      
+
       this.formulario.reset();
       this.formulario.markAsPristine();
       this.formulario.markAsUntouched();
